@@ -9,31 +9,38 @@ usage() {
 }
 shopt -s nullglob
 # use the nullglob option to simply ignore a failed match and not enter the body of the loop.
-SCRIPTDIR=$(dirname $(readlink -f $0))
-DIR1=$1
-#DIR1=`realpath $1`  # works
-SMALLWATERMARK="$SCRIPTDIR/watermark_small.png" # watermark image
-BIGWATERMARK="$SCRIPTDIR/watermark_big.png"     # watermark image
-COMPOSITE="/usr/bin/composite"                  # path to imagemagick compose
-CONVERT="/usr/bin/convert"
+DIR_SCRIPT=$(dirname $(readlink -f $0))
+DIR_BASE=$(pwd) # does sometimes not work :-(
+DIR_SRCIMG=$(readlink -f $1) # works on all *nix systems to make path absolute
+# Resolutions to generate 
+# TODO Make this as an array and loop through the resolutions an generate all dirs on the fly
+r6k=6000
+r4k=4000
+r2k=1680
+
+#DIR_BASE=`realpath $1`  # works
+SMALLWATERMARK="$DIR_SCRIPT/watermark_small.png" # watermark image
+BIGWATERMARK="$DIR_SCRIPT/watermark_big.png"     # watermark image
+COMPOSITE=$(which composite)                  # path to imagemagick compose
+CONVERT=$(which convert)
 GUETZLI="/usr/bin/guetzli"
 QUALITY="50"
-PWD=$(pwd)
-echo "running in $PWD"
-cd $PWD
-DIR1=$(readlink -f $1) # works on all *nix systems to make path absolute
-echo "Script: $SCRIPTDIR"
-echo "ImageDir: $DIR1"
-if [ ! -d "$DIR1" ]; then
-  echo "Error: Directory Patameter ${DIR1} not found --> EXIT."
-  exit 1
-fi
-cd $DIR1
+echo "DIR_BASE:   $DIR_BASE"
+echo "DIR_SRCIMG: $DIR_SRCIMG"
+echo "DIR_SCRIPT: $DIR_SCRIPT"
+
+function check_DIR {
+  DIR=$1
+  if [ ! -d "$DIR" ]; then
+  echo "Error: Directory ${DIR} not found --> EXIT."
+    exit 1
+  fi
+}
 
 # functions
 function check_and_create_DIR {
   DIR=$1
-  #  [ -d "$DIR" ] && echo "Directory $DIR exists. -> OK" || mkdir $DIR
+  #  [ -d "$DIR" ] && echo "Directory $DIR exists. -> OK" || mkdir $DIR # works but not so verbose 
   if [ -d "$DIR" ]; then
     echo "${DIR} exists -> OK"
   else
@@ -64,30 +71,26 @@ function check_files_existance {
   fi
 }
 
-#DIR1="watermark01" # input dir for non watermarked images --> source folder
-#DIR2="watermark02" # outout dir for watermarked images    --> destination folder
-#DIR3="watermark_web" # output for webpages
+# check if all needed DIR exist
+check_DIR $DIR_BASE
+check_DIR $DIR_SCRIPT
+check_DIR $DIR_SRCIMG
 
-r6k=6000
-r4k=4000
-r2k=1680
-dir6k=$r6k"px"
-dir4k=$r4k"px"
-dir2k=$r2k"px"
+# create subfolders for images
+DIR_WATERMARK=$DIR_BASE"/watermarked"
+DIR_WATERMARK_2k=$DIR_WATERMARK"-"$r2k"px"
+DIR_WATERMARK_4k=$DIR_WATERMARK"-"$r4k"px"
+DIR_WATERMARK_6k=$DIR_WATERMARK"-"$r6k"px"
+check_and_create_DIR $DIR_WATERMARK_2k
+check_and_create_DIR $DIR_WATERMARK_4k
+check_and_create_DIR $DIR_WATERMARK_6k
 
-DIR2=$DIR1"/watermarked"
-DIR3=$DIR1"/web"
-exit
+cd $DIR_BASE
 
-[ -d "$dir6k" ] && echo "Directory $dir6k exists." || mkdir $dir6k
 
-# check and create folders
-check_and_create_DIR $DIR1
-check_and_create_DIR $DIR2
-check_and_create_DIR $DIR3
 # Watermark images
-echo "wir sind in >$DIR1< bzw >$PWD<"
-before=$(date +%s)
+before=$(date +%s) # get timing
+cd $DIR_SRCIMG
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # basic syntax:
   # identify testimg.jpg
@@ -97,21 +100,25 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   WATERMARK=$SMALLWATERMARK
   if [ $WIDTH -gt 4000 ]; then
     WATERMARK=$BIGWATERMARK
+    echo "using big watermark"
   fi
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
-  CMD="$COMPOSITE -gravity SouthEast \"$WATERMARK\" \"$FN\" \"$DIR2/$FN\""
+  CMD="$COMPOSITE -gravity SouthEast \"$WATERMARK\" \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
   echo "processing: - >$FN< -- CMD: $CMD"
   eval $CMD
+  
 done
-cd ..
 after=$(date +%s)
 runtime=$((after - $before))
 RT="elapsed time: $runtime seconds"
 echo $RT
 echo $RT >script_execution_time.txt
 
+exit
+
+
 # resize images for web
-cd $DIR2
+cd $DIR_WATERMARK
 before=$(date +%s)
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # basic syntax:

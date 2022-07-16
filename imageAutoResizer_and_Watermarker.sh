@@ -14,8 +14,8 @@ r4k=4000
 r2k=1680
 dir6k=$r6k"px"
 dir4k=$r4k"px"
-dir2k=$r2k"px"
-echo "$dir2k"
+DIR_WATERMARKk=$r2k"px"
+echo "$DIR_WATERMARKk"
 
 [ -d "$dir6k" ] && echo "Directory $dir6k exists." || mkdir $dir6k
 
