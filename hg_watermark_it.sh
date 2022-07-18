@@ -109,6 +109,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   eval $CMD
   # TODO set gloetter watermark only if filename containd "HG" 
   # TODO convert all sizes here maybe via loop
+  # TODO use brotli compression for jpgs for smaller filesizes
   
 done
 after=$(date +%s)
