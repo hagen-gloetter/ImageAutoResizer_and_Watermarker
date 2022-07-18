@@ -19,8 +19,8 @@ r4k=4000
 r2k=1680
 
 #DIR_BASE=`realpath $1`  # works
-SMALLWATERMARK="$DIR_SCRIPT/watermark_small.png" # watermark image
-BIGWATERMARK="$DIR_SCRIPT/watermark_big.png"     # watermark image
+WATERMARK_S="$DIR_SCRIPT/watermark_small.png" # watermark image
+WATERMARK_L="$DIR_SCRIPT/watermark_big.png"     # watermark image
 COMPOSITE=$(which composite)                  # path to imagemagick compose
 CONVERT=$(which convert)
 GUETZLI="/usr/bin/guetzli"
@@ -54,12 +54,12 @@ function check_and_create_DIR {
   fi
 }
 
-if [ ! -f "$SMALLWATERMARK" ]; then
-  echo "Error: $SMALLWATERMARK NOT FOUND --> EXIT."
+if [ ! -f "$WATERMARK_S" ]; then
+  echo "Error: $WATERMARK_S NOT FOUND --> EXIT."
   exit 1
 fi
-if [ ! -f "$BIGWATERMARK" ]; then
-  echo "Error: $BIGWATERMARK NOT FOUND --> EXIT."
+if [ ! -f "$WATERMARK_L" ]; then
+  echo "Error: $WATERMARK_L NOT FOUND --> EXIT."
   exit 1
 fi
 
@@ -97,15 +97,18 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
   # get width of image
   WIDTH=$(identify $FN | cut -d ' ' -f 3 | cut -d 'x' -f 1)
-  WATERMARK=$SMALLWATERMARK
+  WATERMARK=$WATERMARK_S
   if [ $WIDTH -gt 4000 ]; then
-    WATERMARK=$BIGWATERMARK
+    WATERMARK=$WATERMARK_L
     echo "using big watermark"
   fi
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
+  # TODO set both Watermarks at once if possible
   CMD="$COMPOSITE -gravity SouthEast \"$WATERMARK\" \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
   echo "processing: - >$FN< -- CMD: $CMD"
   eval $CMD
+  # TODO set gloetter watermark only if filename containd "HG" 
+  # TODO convert all sizes here maybe via loop
   
 done
 after=$(date +%s)
