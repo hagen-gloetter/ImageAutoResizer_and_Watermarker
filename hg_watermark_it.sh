@@ -19,8 +19,9 @@ r4k=4000
 r2k=1680
 
 #DIR_BASE=`realpath $1`  # works
-WATERMARK_S="$DIR_SCRIPT/watermark_small.png" # watermark image
-WATERMARK_L="$DIR_SCRIPT/watermark_big.png"     # watermark image
+WATERMARK_S="$DIR_SCRIPT/watermark-images/gloetter_de_wasserzeichen_500px.png" # watermark image South-East
+WATERMARK_L="$DIR_SCRIPT/watermark-images/gloetter_de_wasserzeichen_1100px.png"     # watermark image South-East
+WATERMARK_SW="$DIR_SCRIPT/watermark-images/Sternwarte-Wasserzeichen_1680x580px.png"   # watermark image South-West
 COMPOSITE=$(which composite)                  # path to imagemagick compose
 CONVERT=$(which convert)
 GUETZLI="/usr/bin/guetzli"
