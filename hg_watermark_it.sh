@@ -10,19 +10,25 @@ usage() {
 shopt -s nullglob
 # use the nullglob option to simply ignore a failed match and not enter the body of the loop.
 DIR_SCRIPT=$(dirname $(readlink -f $0))
-DIR_BASE=$(pwd) # does sometimes not work :-(
+DIR_BASE=$(pwd)              # does sometimes not work :-(
 DIR_SRCIMG=$(readlink -f $1) # works on all *nix systems to make path absolute
-# Resolutions to generate 
+# Resolutions to generate
 # TODO Make this as an array and loop through the resolutions an generate all dirs on the fly
 r6k=6000
 r4k=4000
 r2k=1680
+SIZE6k="6248×"
+SIZE6k=6000"×"
+SIZE4k="4000x"
+SIZE2k="2000x" # leet !
+SIZE2k="1680x"
+
 
 #DIR_BASE=`realpath $1`  # works
-WATERMARK_S="$DIR_SCRIPT/watermark-images/gloetter_de_wasserzeichen_500px.png" # watermark image South-East
+WATERMARK_S="$DIR_SCRIPT/watermark-images/gloetter_de_wasserzeichen_500px.png"      # watermark image South-East
 WATERMARK_L="$DIR_SCRIPT/watermark-images/gloetter_de_wasserzeichen_1100px.png"     # watermark image South-East
-WATERMARK_SW="$DIR_SCRIPT/watermark-images/Sternwarte-Wasserzeichen_1680x580px.png"   # watermark image South-West
-COMPOSITE=$(which composite)                  # path to imagemagick compose
+WATERMARK_SW="$DIR_SCRIPT/watermark-images/Sternwarte-Wasserzeichen_1980x580px.png" # watermark image South-West
+COMPOSITE=$(which composite)                                                        # path to imagemagick compose
 CONVERT=$(which convert)
 GUETZLI="/usr/bin/guetzli"
 QUALITY="50"
@@ -33,7 +39,7 @@ echo "DIR_SCRIPT: $DIR_SCRIPT"
 function check_DIR {
   DIR=$1
   if [ ! -d "$DIR" ]; then
-  echo "Error: Directory ${DIR} not found --> EXIT."
+    echo "Error: Directory ${DIR} not found --> EXIT."
     exit 1
   fi
 }
@@ -41,7 +47,7 @@ function check_DIR {
 # functions
 function check_and_create_DIR {
   DIR=$1
-  #  [ -d "$DIR" ] && echo "Directory $DIR exists. -> OK" || mkdir $DIR # works but not so verbose 
+  #  [ -d "$DIR" ] && echo "Directory $DIR exists. -> OK" || mkdir $DIR # works but not so verbose
   if [ -d "$DIR" ]; then
     echo "${DIR} exists -> OK"
   else
@@ -88,7 +94,6 @@ check_and_create_DIR $DIR_WATERMARK_6k
 
 cd $DIR_BASE
 
-
 # Watermark images
 before=$(date +%s) # get timing
 cd $DIR_SRCIMG
@@ -101,17 +106,30 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   WATERMARK=$WATERMARK_S
   if [ $WIDTH -gt 4000 ]; then
     WATERMARK=$WATERMARK_L
-    echo "using big watermark"
+    echo "using big watermark $WATERMARK"
   fi
+$FN=$(readlink -f $FN)
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
   # TODO set both Watermarks at once if possible
   CMD="$COMPOSITE -gravity SouthEast \"$WATERMARK\" \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
+  ANNOTATE="-annotate +0+2"
+  ANNOTATE=""
+  SIZE="-resize ${r6k}x"
+  WATERMARK_SOUTHWEST="-gravity SouthWest \"$WATERMARK_SW\""
+  WATERMARK_SOUTHEAST="-gravity SouthEast '$WATERMARK'"
+  CMD="$COMPOSITE  $WATERMARK_SOUTHWEST $WATERMARK_SOUTHEAST \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
+  CMD="$CONVERT $SIZE $WATERMARK_SOUTHWEST $WATERMARK_SOUTHEAST  \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
+  CMD="$CONVERT $SIZE $WATERMARK_SOUTHEAST \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
+  echo "processing: - >$FN<"
+  echo " -- CMD:>>\n"
+  echo "$CMD"
+  echo
   echo "processing: - >$FN< -- CMD: $CMD"
   eval $CMD
-  # TODO set gloetter watermark only if filename containd "HG" 
+  # TODO set gloetter watermark only if filename containd "HG"
   # TODO convert all sizes here maybe via loop
   # TODO use brotli compression for jpgs for smaller filesizes
-  
+exit
 done
 after=$(date +%s)
 runtime=$((after - $before))
@@ -120,7 +138,6 @@ echo $RT
 echo $RT >script_execution_time.txt
 
 exit
-
 
 # resize images for web
 cd $DIR_WATERMARK
