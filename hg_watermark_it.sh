@@ -116,7 +116,9 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
   # get width of image
   WIDTH=$(identify $FN | cut -d ' ' -f 3 | cut -d 'x' -f 1)
-  OFFSET_WATERMARK=$(( $WIDTH/20 ))
+  OFFSET_WATERMARK=$(( $WIDTH/40 ))
+  WATERMARK_SW_WIDTH=$(( $WIDTH/3 ))
+  WATERMARK_HG_WIDTH=$(( $WIDTH/5 ))
   echo "WIDTH: $WIDTH"
   WATERMARK=$WATERMARK_SW_S
   if [ $WIDTH -gt 4000 ]; then
@@ -126,7 +128,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
   # TODO set both Watermarks at once if possible
 
-  CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK"+0 \"$WATERMARK\" \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
+  CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK"+0 -dissolve 50% \( \"$WATERMARK\" -resize $WATERMARK_SW_WIDTH \) \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
   echo "processing: - >$FN< -- CMD: $CMD"
   eval $CMD
   # TODO set gloetter watermark only if filename containd "HG" 
@@ -139,7 +141,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
       echo "using big HG watermark"
       WATERMARK=$WATERMARK_HG_L
     fi
-    CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK"+0 \"$WATERMARK\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+    CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK"+0 -dissolve 50% \( \"$WATERMARK\" -resize $WATERMARK_HG_WIDTH \) \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
     echo "processing: - >$FN< -- CMD: $CMD"
     eval $CMD
     ;;
