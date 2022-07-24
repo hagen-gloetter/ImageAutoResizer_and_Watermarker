@@ -14,9 +14,9 @@ usage() {
 }
 shopt -s nullglob
 # use the nullglob option to simply ignore a failed match and not enter the body of the loop.
-DIR_SCRIPT=$(dirname $(greadlink -f $0))"/watermark-images"
+DIR_SCRIPT=$(dirname $(readlink -f $0))"/watermark-images"
 DIR_BASE=$(pwd) # does sometimes not work :-(
-DIR_SRCIMG=$(greadlink -f $1) # works on all *nix systems to make path absolute
+DIR_SRCIMG=$(readlink -f $1) # works on all *nix systems to make path absolute
 # Resolutions to generate 
 # TODO Make this as an array and loop through the resolutions an generate all dirs on the fly
 r6k=6000
@@ -24,9 +24,9 @@ r4k=4000
 r2k=1680
 
 #DIR_BASE=`realpath $1`  # works
-WATERMARK_HG_S="$DIR_SCRIPT/watermark_small.png" # watermark image
+WATERMARK_HG_S="$DIR_SCRIPT/gloetter_de_wasserzeichen_1100px.png" # watermark image
 echo "WATERMARK_HG_S = $WATERMARK_HG_S"
-WATERMARK_HG_L="$DIR_SCRIPT/watermark_big.png"     # watermark image
+WATERMARK_HG_L="$DIR_SCRIPT/gloetter_de_wasserzeichen_1600px.png"     # watermark image
 echo "WATERMARK_HG_L = $WATERMARK_HG_L"
 WATERMARK_SW_S="$DIR_SCRIPT/Sternwarte-Wasserzeichen_1000x290px.png"
 echo "WATERMARK_SW_S = $WATERMARK_SW_S"
@@ -115,7 +115,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # identify testimg.jpg
   # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
   # get width of image
-  WIDTH=$(identify $FN | cut -d ' ' -f 3 | cut -d 'x' -f 1)
+    WIDTH=$(identify -ping -format '%w' "$FN")
   OFFSET_WATERMARK=$(( $WIDTH/20 ))
   echo "WIDTH: $WIDTH"
   WATERMARK=$WATERMARK_SW_S
@@ -126,7 +126,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
   # TODO set both Watermarks at once if possible
 
-  CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK"+0 \"$WATERMARK\" \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
+  CMD="$COMPOSITE -gravity SouthWest  -watermark 80% -geometry +"$OFFSET_WATERMARK"+0 \"$WATERMARK\" \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
   echo "processing: - >$FN< -- CMD: $CMD"
   eval $CMD
   # TODO set gloetter watermark only if filename containd "HG" 
@@ -139,7 +139,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
       echo "using big HG watermark"
       WATERMARK=$WATERMARK_HG_L
     fi
-    CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK"+0 \"$WATERMARK\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+    CMD="$COMPOSITE -gravity SouthEast -watermark 80% -geometry +"$OFFSET_WATERMARK"+0 \"$WATERMARK\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
     echo "processing: - >$FN< -- CMD: $CMD"
     eval $CMD
     ;;
