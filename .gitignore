@@ -1,8 +1,10 @@
 
-.DS_Store
 watermarked-1680px/
 watermarked-4000px/
 watermarked-6000px/
 script_execution_time.txt
 volle_Aufloesung/script_execution_time.txt
 .DS_Store
+**/.DS_Store
+*.DS_Store
+#git rm -r --cached static/.DS_Store

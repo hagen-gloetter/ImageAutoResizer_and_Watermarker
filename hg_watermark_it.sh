@@ -8,43 +8,44 @@
 _self="${0##*/}"
 echo "$_self is called"
 
+if [[ $# -eq 0 ]] ; then
+    echo "Usage: $(basename $0) [foldername]" 
+    exit 1
+fi
+
 ## or in usage() ##
 usage() {
   echo "$_self: Picture-Foldername"
 }
 shopt -s nullglob
 # use the nullglob option to simply ignore a failed match and not enter the body of the loop.
-DIR_SCRIPT=$(dirname $(readlink -f $0))
-DIR_BASE=$(pwd)              # does sometimes not work :-(
-DIR_SRCIMG=$(readlink -f $1) # works on all *nix systems to make path absolute
+COMPOSITE=$(which composite) # path to imagemagick compose
+CONVERT=$(which convert)
+GUETZLI=$(which guetzli)
+QUALITY="75"
+cat /etc/issue | grep -i "ubuntu"
+if [ $? -eq 0 ]; then
+  echo "Ubuntu detected"
+  DIR_SCRIPT=$(dirname $(readlink -f $0))
+  DIR_SRCIMG=$(readlink -f $1) # works on all *nix systems to make path absolute
+else
+  echo "MacOS detected"
+  DIR_SCRIPT=$(dirname $(greadlink -f $0))
+  DIR_SRCIMG=$(greadlink -f $1) # works on all *nix systems to make path absolute
+fi
+DIR_BASE=$(pwd) # does sometimes not work :-(
+DIR_WATERMARK_IMAGES="$DIR_SCRIPT/watermark-images"
+
+echo "DIR_BASE:   $DIR_BASE"
+echo "DIR_SRCIMG: $DIR_SRCIMG"
+echo "DIR_SCRIPT: $DIR_SCRIPT"
+echo "DIR_WATERMARK_IMAGES: $DIR_WATERMARK_IMAGES"
+
 # Resolutions to generate
 # TODO Make this as an array and loop through the resolutions an generate all dirs on the fly
 r6k=6000
 r4k=4000
 r2k=1680
-SIZE6k="6248×"
-SIZE6k=6000"×"
-SIZE4k="4000x"
-SIZE2k="2000x" # leet !
-SIZE2k="1680x"
-
-DIR_WATERMARK_IMAGES="$DIR_SCRIPT/watermark-images"
-#DIR_BASE=`realpath $1`  # works
-WATERMARK_HG_S="$DIR_WATERMARK_IMAGES/watermark_small.png" # watermark image
-echo "WATERMARK_HG_S = $WATERMARK_HG_S"
-WATERMARK_HG_L="$DIR_WATERMARK_IMAGES/watermark_big.png" # watermark image
-echo "WATERMARK_HG_L = $WATERMARK_HG_L"
-WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"
-echo "WATERMARK_SW_S = $WATERMARK_SW_S"
-WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1980x580px.png"
-echo "WATERMARK_SW_L = $WATERMARK_SW_L"
-COMPOSITE=$(which composite) # path to imagemagick compose
-CONVERT=$(which convert)
-GUETZLI=$(which guetzli)
-QUALITY="70"
-echo "DIR_BASE:   $DIR_BASE"
-echo "DIR_SRCIMG: $DIR_SRCIMG"
-echo "DIR_SCRIPT: $DIR_SCRIPT"
 
 function check_DIR {
   DIR=$1
@@ -71,23 +72,6 @@ function check_and_create_DIR {
   fi
 }
 
-if [ ! -f "$WATERMARK_HG_S" ]; then
-  echo "Error: $WATERMARK_HG_S NOT FOUND --> EXIT."
-  exit 1
-fi
-if [ ! -f "$WATERMARK_HG_L" ]; then
-  echo "Error: $WATERMARK_HG_L NOT FOUND --> EXIT."
-  exit 1
-fi
-if [ ! -f "$WATERMARK_SW_S" ]; then
-  echo "Error: $WATERMARK_SW_S NOT FOUND --> EXIT."
-  exit 1
-fi
-if [ ! -f "$WATERMARK_SW_L" ]; then
-  echo "Error: $WATERMARK_SW_L NOT FOUND --> EXIT."
-  exit 1
-fi
-
 function check_files_existance {
   FN=$1
   if [ ! -f "$FN" ]; then
@@ -100,6 +84,17 @@ function check_files_existance {
 check_DIR $DIR_BASE
 check_DIR $DIR_SCRIPT
 check_DIR $DIR_SRCIMG
+check_DIR $DIR_WATERMARK_IMAGES
+
+#DIR_BASE=`realpath $1`  # works
+## SE
+WATERMARK_SE_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1600px.png" ; echo "WATERMARK_SE_L = $WATERMARK_SE_L"
+WATERMARK_SE_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" ; echo "WATERMARK_SE_M = $WATERMARK_SE_M"
+WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"  ; echo "WATERMARK_SE_S = $WATERMARK_SE_S"
+## SW
+WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png" ; echo "WATERMARK_SW_L = $WATERMARK_SW_L"
+WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png" ; echo "WATERMARK_SW_M = $WATERMARK_SW_M"
+WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"; echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images
 DIR_WATERMARK=$DIR_BASE"/watermarked"
@@ -109,6 +104,12 @@ DIR_WATERMARK_6k=$DIR_WATERMARK"-"$r6k"px"
 check_and_create_DIR $DIR_WATERMARK_2k
 check_and_create_DIR $DIR_WATERMARK_4k
 check_and_create_DIR $DIR_WATERMARK_6k
+check_files_existance $WATERMARK_SE_S
+check_files_existance $WATERMARK_SE_M
+check_files_existance $WATERMARK_SE_L
+check_files_existance $WATERMARK_SW_S
+check_files_existance $WATERMARK_SW_M
+check_files_existance $WATERMARK_SW_L
 
 cd $DIR_BASE
 
@@ -120,43 +121,61 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # identify testimg.jpg
   # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
   # get width of image
-  WIDTH=$(identify "$FN" | cut -d ' ' -f 3 | cut -d 'x' -f 1)
-  
-  OFFSET_WATERMARK=$(($WIDTH / 20))
+  WIDTH=$(identify -ping -format '%w' "$FN")
+  OFFSET_WATERMARK_X=$(($WIDTH / 50))
+  WATERMARK_SW_WIDTH=$(($WIDTH / 4))
+  WATERMARK_SE_WIDTH=$(($WIDTH / 5))
+  OFFSET_WATERMARK_Y=100
   echo "WIDTH: $WIDTH"
-  WATERMARK=$WATERMARK_SW_S
-  if [ $WIDTH -gt 4000 ]; then
-    WATERMARK=$WATERMARK_SW_L
-    echo "using big watermark"
+  echo "OFFSET_WATERMARK_X: $OFFSET_WATERMARK_X"
+  echo "WATERMARK_SW_WIDTH: $WATERMARK_SW_WIDTH"
+  echo "WATERMARK_SE_WIDTH: $WATERMARK_SE_WIDTH"
+  WATERMARK_SW=$WATERMARK_SW_L
+  WATERMARK_SE=$WATERMARK_SE_L
+
+  if [ $WIDTH -ge $r6k ]; then
+    echo "using L watermark"
+    WATERMARK_SW=$WATERMARK_SW_L
+    WATERMARK_SE=$WATERMARK_SE_L
+  elif [ $WIDTH -ge $r4k ]; then
+    echo "using M watermark"
+    WATERMARK_SW=$WATERMARK_SW_M
+    WATERMARK_SE=$WATERMARK_SE_M
+  elif [ $WIDTH -ge $r2k ]; then
+    echo "using S watermark"
+    WATERMARK_SW=$WATERMARK_SW_S
+    WATERMARK_SE=$WATERMARK_SE_S
   fi
-  $FN=$(readlink -f $FN)
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
   # TODO set both Watermarks at once if possible
-
-  CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK"+0 \"$WATERMARK\" \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
+  TRANDPARENZ="-dissolve 50%"
+  TRANDPARENZ=""
+  # OFFSET_WATERMARK_X=0 # debug
+  CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANDPARENZ \( \"$WATERMARK_SW\"  \) \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
   echo "processing: - >$FN< -- CMD: $CMD"
   eval $CMD
   # TODO set gloetter watermark only if filename containd "HG"
   case "$FN" in *HG*)
-    echo "!!!!!!! HG found in !!!!!!!!!!!! $FN"
-    if [[ "$WATERMARK" == "$WATERMARK_SW_S" ]]; then
-      echo "using small HG watermark"
-      WATERMARK=$WATERMARK_HG_S
-    elif [[ "$WATERMARK" == "$WATERMARK_SW_L" ]]; then
-      echo "using big HG watermark"
-      WATERMARK=$WATERMARK_HG_L
-    fi
-    CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK"+0 \"$WATERMARK\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+    echo "HG found in filename $FN"
+    CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \( \"$WATERMARK_SE\"  \) \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
     echo "processing: - >$FN< -- CMD: $CMD"
     eval $CMD
     ;;
   *) ;;
-
   esac
   # TODO convert all sizes here maybe via loop
-  # TODO use brotli compression for jpgs for smaller filesizes
-  exit
+  
+    # 4k
+    CMD="$CONVERT \"$DIR_WATERMARK_6k/$FN\" -resize $r4k -strip -quality $QUALITY  \"$DIR_WATERMARK_4k/$FN\" "
+    echo -e "resizing: - >$FN< -- CMD: $CMD\n"
+    eval $CMD
+    # 2k
+    CMD="$CONVERT  \"$DIR_WATERMARK_6k/$FN\" -resize $r2k -strip -quality $QUALITY  \"$DIR_WATERMARK_2k/$FN\""
+    echo -e "resizing: - >$FN< -- CMD: $CMD\n"
+    eval $CMD
+    # TODO use brotli compression for jpgs for smaller filesizes
 done
+
 after=$(date +%s)
 runtime=$((after - $before))
 RT="elapsed time: $runtime seconds"
@@ -166,14 +185,7 @@ echo $RT >script_execution_time.txt
 exit
 
 # resize images for web
-cd $DIR_WATERMARK
-before=$(date +%s)
-for FN in *.jpg *.jpeg *.JPG *.JPEG; do
-  # basic syntax:
-  # convert dragon.gif    -resize 64x64  resize_dragon.gif
-  CMD="$CONVERT \"$FN\" -resize 1680x1080 -strip -quality $QUALITY \"$DIR3/$FN\""
-  echo "resizing: - >$FN< -- CMD: $CMD"
-  eval $CMD
+
   # basic syntax:
   # guetzli --quality 85 image.jpg image-out.jpg
   FNW="web_"$FN
