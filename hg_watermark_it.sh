@@ -5,6 +5,7 @@
 # brew install imagemagick
 # brew install guetzli
 
+
 _self="${0##*/}"
 echo "$_self is called"
 
@@ -93,8 +94,8 @@ WATERMARK_SE_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" ; ec
 WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"  ; echo "WATERMARK_SE_S = $WATERMARK_SE_S"
 ## SW
 WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png" ; echo "WATERMARK_SW_L = $WATERMARK_SW_L"
-WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png" ; echo "WATERMARK_SW_M = $WATERMARK_SW_M"
-WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"; echo "WATERMARK_SW_S = $WATERMARK_SW_S"
+WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png" ; echo "WATERMARK_SW_M = $WATERMARK_SW_M"
+WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_500x150px.png"; echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images
 DIR_WATERMARK=$DIR_BASE"/watermarked"
@@ -149,7 +150,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
   # TODO set both Watermarks at once if possible
   TRANDPARENZ="-dissolve 50%"
-  TRANDPARENZ=""
+#  TRANDPARENZ=""
   # OFFSET_WATERMARK_X=0 # debug
   CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANDPARENZ \( \"$WATERMARK_SW\"  \) \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
   echo "processing: - >$FN< -- CMD: $CMD"
@@ -157,7 +158,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # TODO set gloetter watermark only if filename containd "HG"
   case "$FN" in *HG*)
     echo "HG found in filename $FN"
-    CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \( \"$WATERMARK_SE\"  \) \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+    CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANDPARENZ \( \"$WATERMARK_SE\"  \) \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
     echo "processing: - >$FN< -- CMD: $CMD"
     eval $CMD
     ;;
