@@ -22,8 +22,8 @@ shopt -s nullglob
 COMPOSITE=$(which composite) # path to imagemagick compose
 CONVERT=$(which convert)
 QUALITYJPG="85"
-GUETZLI=$(which guetzli)
 GUETZLI_EXISTS="NO"
+GUETZLI=$(which guetzli)
 if [ $? -eq 0 ]; then
   echo "Guezli Compression found"
   GUETZLI_EXISTS="YES"
@@ -86,6 +86,17 @@ function check_files_existance {
     exit 1
   fi
 }
+
+function make_guezli {
+    FN_IN="$1"
+    FN_OUT="$2"
+    gzbefore=$(date +%s) # get timing
+    CMD="$GUETZLI --quality $QUALITYGZLY \"$FN_IN\" \"$FN_OUT\" "
+    gzafter=$(date +%s)
+    gzruntime=$(($gzafter - $gzbefore))
+    echo "guezli compression time: $gzruntime seconds"
+}
+
 
 # check if all needed DIR exist
 check_DIR $DIR_BASE
@@ -191,18 +202,15 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     # basic syntax:
     # guetzli --quality 85 image.jpg image-out.jpg
     FNW="web_"$FN
-    #    echo "Guezli 6k"
+    echo "Guezli 6k"
     #    echo $CMD
-    CMD="$GUETZLI --quality $QUALITYGZLY  \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_4k/$FNW\"  "
-    echo "$CMD" >> ../guezli_6k_list.sh
+    CMD="$GUETZLI --quality $QUALITYGZLY  \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_4k/$FNW\"  " ;     echo "$CMD" >> ../guezli_6k_list.sh
+    
+    make_guezli "$DIR_WATERMARK_6k/$FN" "$DIR_WATERMARK_6k/$FNW"
     echo "Guezli 4k"
-    CMD="$GUETZLI --quality $QUALITYGZLY  \"$DIR_WATERMARK_4k/$FN\" \"$DIR_WATERMARK_4k/$FNW\"  "
-    #    echo $CMD
-    eval $CMD
+    make_guezli "$DIR_WATERMARK_4k/$FN" "$DIR_WATERMARK_4k/$FNW"
     echo "Guezli 2k"
-    CMD="$GUETZLI --quality $QUALITYGZLY  \"$DIR_WATERMARK_2k/$FN\" \"$DIR_WATERMARK_2k/$FNW\"  "
-    #    echo $CMD
-    eval $CMD
+    make_guezli "$DIR_WATERMARK_2k/$FN" "$DIR_WATERMARK_2k/$FNW"
   fi
 done
 
