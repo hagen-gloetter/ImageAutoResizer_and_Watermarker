@@ -90,8 +90,11 @@ function check_files_existance {
 function make_guezli {
     FN_IN="$1"
     FN_OUT="$2"
+    echo "FN_IN=>$FN_IN<"
+    echo "FN_OUT=>$FN_OUT<"
     gzbefore=$(date +%s) # get timing
     CMD="$GUETZLI --quality $QUALITYGZLY \"$FN_IN\" \"$FN_OUT\" "
+    eval $CMD
     gzafter=$(date +%s)
     gzruntime=$(($gzafter - $gzbefore))
     echo "guezli compression time: $gzruntime seconds"
@@ -206,7 +209,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     #    echo $CMD
     CMD="$GUETZLI --quality $QUALITYGZLY  \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_4k/$FNW\"  " ;     echo "$CMD" >> ../guezli_6k_list.sh
     
-    make_guezli "$DIR_WATERMARK_6k/$FN" "$DIR_WATERMARK_6k/$FNW"
+#    make_guezli "$DIR_WATERMARK_6k/$FN" "$DIR_WATERMARK_6k/$FNW"
     echo "Guezli 4k"
     make_guezli "$DIR_WATERMARK_4k/$FN" "$DIR_WATERMARK_4k/$FNW"
     echo "Guezli 2k"
