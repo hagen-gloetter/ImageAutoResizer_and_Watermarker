@@ -207,7 +207,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     FNW="web_"$FN
     echo "Guezli 6k"
     #    echo $CMD
-    CMD="$GUETZLI --quality $QUALITYGZLY  \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_4k/$FNW\"  " ;     echo "$CMD" >> ../guezli_6k_list.sh
+    CMD="$GUETZLI --quality $QUALITYGZLY  \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FNW\"  " ;     echo "$CMD" >> ../guezli_6k_list.sh
     
 #    make_guezli "$DIR_WATERMARK_6k/$FN" "$DIR_WATERMARK_6k/$FNW"
     echo "Guezli 4k"
