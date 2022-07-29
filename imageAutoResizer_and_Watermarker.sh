@@ -126,6 +126,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   WATERMARK_SW_WIDTH=$(($WIDTH / 4))
   WATERMARK_SE_WIDTH=$(($WIDTH / 5))
   OFFSET_WATERMARK_Y=100
+  LABELLING_SIZE=$(($WIDTH / 60))
   echo "WIDTH: $WIDTH"
   echo "OFFSET_WATERMARK_X: $OFFSET_WATERMARK_X"
   echo "WATERMARK_SW_WIDTH: $WATERMARK_SW_WIDTH"
@@ -163,6 +164,31 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     ;;
   *) ;;
   esac
+
+  FN_CUT=$(echo $FN | cut -f1 -d.)
+    if [[ -f "$FN_CUT.txt" ]]; then
+      echo "textfile found: $FN_CUT.txt"
+      echo "$FN"
+      echo "$FN_CUT.txt"
+      FILENAME="$DIR_SRCIMG/$FN_CUT.txt"
+      echo "$FILENAME"
+      LINE_COUNTER=1
+      CAPTION=""
+      LABELLING_TEXT=""
+      IFS=$'\n'
+      for LINE in `cat $FILENAME`; do
+        if [[ $LINE_COUNTER = "1" ]]; then
+          CMD="$CONVERT -font helvetica -fill white -pointsize $(( $LABELLING_SIZE * 2 )) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+          eval $CMD
+        else 
+          LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
+        fi
+        echo "$LINE read from $FILENAME"
+        LINE_COUNTER=LINE_COUNTER+1
+      done
+      CMD="$CONVERT -font helvetica -fill white -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(( $OFFSET_WATERMARK_Y + $(( $LABELLING_SIZE * 2 )) )) \"${LABELLING_TEXT}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+      eval $CMD
+    fi
   # TODO convert all sizes here maybe via loop
   
     # 4k
