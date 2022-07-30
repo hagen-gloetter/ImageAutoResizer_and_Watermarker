@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
+M27 Hantelnebel
+Datum: 09.10.2021
+Sternbild: Fuchs
+Magnitude: 7,5
+Entfernung: 1.360 Lj
+Durchmesser: 2,88 Lj
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 2190s
+Aufnahmen: 73

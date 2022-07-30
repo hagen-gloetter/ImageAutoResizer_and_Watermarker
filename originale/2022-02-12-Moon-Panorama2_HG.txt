@@ -1,10 +1,5 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
+Mond
+Datum: 12.02.2022
+Entfernung: 384.400km
+Durchmesser: 3475km
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:

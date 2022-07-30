@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
+M57 Ringnebel
+Datum: 24.09.2021
+Sternbild: Leier
+Magnitude: 8,8
+Entfernung: 2.283 Lj
+Durchmesser: 2,6 Lj
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 770s
+Aufnahmen: 77

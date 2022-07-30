@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
+h Persei (NGC 869) und Chi Persei (NGC 884) - Kugelsternhaufen
+Datum: 14.01.2022 
+Sternbild: Perseus
+Magnitude: 3,7
+Entfernung: 7.502 Lj
 Durchmesser:  Lj
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 2880s
+Aufnahmen: 96

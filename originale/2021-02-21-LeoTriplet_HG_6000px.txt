@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
-Instrument: 5″ Starfire Refractor
+Leo-Triplett (M65, M66, NGC3628)
+Datum: 21.02.2021
+Sternbild: Löwe
+Magnitude: 8,9
+Entfernung: 35 Mio Lj
+Durchmesser: 100.000 Lj
 Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 960s
+Aufnahmen: 16

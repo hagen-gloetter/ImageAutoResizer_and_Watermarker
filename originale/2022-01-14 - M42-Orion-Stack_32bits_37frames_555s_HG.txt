@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
+M42 Orion
+Datum: 14.01.2022
+Sternbild: Orion
+Magnitude: 3,7
+Entfernung: 1350 Lj
+Durchmesser: 24 Lj
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 550s
+Aufnahmen: 37

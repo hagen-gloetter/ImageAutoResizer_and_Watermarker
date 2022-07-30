@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
+M51 Whirlpool-Galaxie
+Datum: 14.01.14 
+Sternbild: Jagdhunde
+Magnitude: 8.0
+Entfernung:  37.000 Lj
+Durchmesser: 60.000 Lj
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 1680s
+Aufnahmen: 56
