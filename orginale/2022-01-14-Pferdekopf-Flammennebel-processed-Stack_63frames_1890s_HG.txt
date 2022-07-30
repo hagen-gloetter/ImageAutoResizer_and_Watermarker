@@ -1,0 +1,7 @@
+IC 434 Pferdekopfnebel
+Ort: Sternwarte Höfingen
+Datum: 14.01.2022 
+Sternbild: Orion
+Magnitude: 6,8
+Entfernung: 1.500 Lj
+Durchmesser: 7 Lj

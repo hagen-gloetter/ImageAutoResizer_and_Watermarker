@@ -1,0 +1,8 @@
+cat template.txt > 2021-05-01-Andromeda-Mosaic-final_6000px.txt
+cat template.txt > 2022-01-14-Pferdekopf-Flammennebel-processed-Stack_63frames_1890s_HG.txt
+cat template.txt > 2022-02-28-NGC-2238-Rosettennebel-Mosaic_HG_05.txt
+cat template.txt > 2022-02-28-NGC-2238-Rosettennebel-Mosaic_HG_05_max.txt
+cat template.txt > 2022-05-14-Moon-HG.txt
+
+
+

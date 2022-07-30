@@ -80,6 +80,15 @@ function check_files_existance {
   fi
 }
 
+function get_filename_without_extension {
+  filename=$1
+  FN_CUT="${filename%.*}"
+#  filename=$(basename -- "$1")
+#  extension="${filename##*.}"
+#  filename="${filename%.*}"
+  return $FN_CUT
+}
+
 # check if all needed DIR exist
 check_DIR $DIR_BASE
 check_DIR $DIR_SCRIPT
@@ -164,29 +173,29 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     ;;
   *) ;;
   esac
-
-  FN_CUT=$(echo $FN | cut -f1 -d.)
-    if [[ -f "$FN_CUT.txt" ]]; then
-      echo "textfile found: $FN_CUT.txt"
-      echo "$FN"
-      echo "$FN_CUT.txt"
-      FILENAME="$DIR_SRCIMG/$FN_CUT.txt"
-      echo "$FILENAME"
+  echo "Text Imprint"
+  FN_CUT="${FN%.*}"
+  FN_TXT=$FN_CUT".txt"
+    if [[ -f "$FN_TXT" ]]; then
+      echo "TEXTFILE found:"
+      echo "$FN_TXT"
+      FILENAME="$DIR_SRCIMG/$FN_TXT"
       LINE_COUNTER=1
       CAPTION=""
+      TEXTCOLOR="#808080"
       LABELLING_TEXT=""
       IFS=$'\n'
       for LINE in `cat $FILENAME`; do
         if [[ $LINE_COUNTER = "1" ]]; then
-          CMD="$CONVERT -font helvetica -fill white -pointsize $(( $LABELLING_SIZE * 2 )) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+          CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $(( $LABELLING_SIZE * 2 )) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
           eval $CMD
         else 
           LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
         fi
-        echo "$LINE read from $FILENAME"
+#        echo "$LINE read from $FILENAME"
         LINE_COUNTER=LINE_COUNTER+1
       done
-      CMD="$CONVERT -font helvetica -fill white -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(( $OFFSET_WATERMARK_Y + $(( $LABELLING_SIZE * 2 )) )) \"${LABELLING_TEXT}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+      CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(( $OFFSET_WATERMARK_Y + $(( $LABELLING_SIZE * 2 )) )) \"${LABELLING_TEXT}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
       eval $CMD
     fi
   # TODO convert all sizes here maybe via loop

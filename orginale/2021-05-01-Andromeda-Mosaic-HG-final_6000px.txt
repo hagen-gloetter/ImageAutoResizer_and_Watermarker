@@ -1,0 +1,8 @@
+M31 Andromedagalaxie
+Ort: Sternwarte Höfingen
+Datum: 01.05.2021 
+Sternbild: Andromeda
+Magnitude: 3,4
+Entfernung:  2.537.000 Lj
+Durchmesser: 220.000 Lj
+Sterne: 1 Billion
