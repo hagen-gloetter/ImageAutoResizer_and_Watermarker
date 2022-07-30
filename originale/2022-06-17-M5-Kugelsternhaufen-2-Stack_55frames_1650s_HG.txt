@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
+M5 Rosenhaufen
+Datum: 17.06.2022
+Sternbild: Schlangen
+Magnitude: 7.0
+Entfernung: 23.000 Lj
+Durchmesser: 165 Lj
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 1650s
+Aufnahmen: 55

@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
+M20 Trifidnebel
+Datum: 02.07.2022
+Sternbild: Schütze
+Magnitude: 5.0
+Entfernung: 5.200 Lj
+Durchmesser: 42 Lj
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 720s
+Aufnahmen: 24

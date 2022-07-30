@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
+M4 Kugelsternhaufen
+Datum: 02.07.2022
+Sternbild: Skorpion
+Magnitude: 7.5
+Entfernung: 7.000 Lj
+Durchmesser: 75 Lj
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 900s
+Aufnahmen: 30

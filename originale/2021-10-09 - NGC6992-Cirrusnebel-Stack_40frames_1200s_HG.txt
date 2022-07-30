@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
+NGC 6992 Cirrusnebel
+Datum:09.10.2021 
+Sternbild: Schwan
+Magnitude: 7.0
+Entfernung: 1.470 Lj
+Durchmesser: 100 Lj
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 1200s
+Aufnahmen: 40
