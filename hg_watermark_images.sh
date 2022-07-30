@@ -30,6 +30,8 @@ if [ $? -eq 0 ]; then
   QUALITYGZLY=$QUALITYJPG
   QUALITYJPG=100 # render jpgs 100% quality and do compression by guezli
 fi
+GUETZLI_EXISTS="NO" # turn it off manual for faster debug time
+echo "" > ../guezli_compression_list.sh # clear list
 UBUNTU=$(cat /etc/issue | grep -i "ubuntu")
 if [ $? -eq 0 ]; then
   echo "Ubuntu detected"
@@ -88,27 +90,32 @@ function check_files_existance {
 }
 
 function make_guezli {
-    FN_IN="$1"
-    FN_OUT="$2"
-    echo "FN_IN=>$FN_IN<"
-    echo "FN_OUT=>$FN_OUT<"
+  FN_IN="$1"
+  FN_OUT="$2"
+  echo "FN_IN=>$FN_IN<"
+  echo "FN_OUT=>$FN_OUT<"
+  echo "Guezli compression = on"
+  CMD="$GUETZLI --quality $QUALITYGZLY \"$FN_IN\" \"$FN_OUT\"  "
+  if [ $GUETZLI_EXISTS == "YES" ]; then
     gzbefore=$(date +%s) # get timing
-    CMD="$GUETZLI --quality $QUALITYGZLY \"$FN_IN\" \"$FN_OUT\" & "
     eval $CMD
     gzafter=$(date +%s)
     gzruntime=$(($gzafter - $gzbefore))
     echo "guezli compression time: $gzruntime seconds"
+  else
+    echo "$CMD" >>../guezli_compression_list.sh
+  fi
 }
 
 function get_filename_without_extension {
   filename=$1
   FN_CUT="${filename%.*}"
-#  filename=$(basename -- "$1")
-#  extension="${filename##*.}"
-#  filename="${filename%.*}"
+  #  filename=$(basename -- "$1")
+  #  extension="${filename##*.}"
+  #  filename="${filename%.*}"
   return $FN_CUT
 }
-  
+
 # check if all needed DIR exist
 check_DIR $DIR_BASE
 check_DIR $DIR_SCRIPT
@@ -117,13 +124,19 @@ check_DIR $DIR_WATERMARK_IMAGES
 
 #DIR_BASE=`realpath $1`  # works
 ## SE
-WATERMARK_SE_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1600px.png" ; echo "WATERMARK_SE_L = $WATERMARK_SE_L"
-WATERMARK_SE_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" ; echo "WATERMARK_SE_M = $WATERMARK_SE_M"
-WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"  ; echo "WATERMARK_SE_S = $WATERMARK_SE_S"
+WATERMARK_SE_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1600px.png"
+echo "WATERMARK_SE_L = $WATERMARK_SE_L"
+WATERMARK_SE_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png"
+echo "WATERMARK_SE_M = $WATERMARK_SE_M"
+WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"
+echo "WATERMARK_SE_S = $WATERMARK_SE_S"
 ## SW
-WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png" ; echo "WATERMARK_SW_L = $WATERMARK_SW_L"
-WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png" ; echo "WATERMARK_SW_M = $WATERMARK_SW_M"
-WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"; echo "WATERMARK_SW_S = $WATERMARK_SW_S"
+WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png"
+echo "WATERMARK_SW_L = $WATERMARK_SW_L"
+WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png"
+echo "WATERMARK_SW_M = $WATERMARK_SW_M"
+WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"
+echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images
 DIR_WATERMARK=$DIR_BASE"/watermarked"
@@ -195,28 +208,28 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   echo "Text Imprint"
   FN_CUT="${FN%.*}"
   FN_TXT=$FN_CUT".txt"
-    if [[ -f "$FN_TXT" ]]; then
-      echo "TEXTFILE found:"
-      echo "$FN_TXT"
-      FILENAME="$DIR_SRCIMG/$FN_TXT"
-      LINE_COUNTER=1
-      CAPTION=""
-      TEXTCOLOR="#808080"
-      LABELLING_TEXT=""
-      IFS=$'\n'
-      for LINE in `cat $FILENAME`; do
-        if [[ $LINE_COUNTER = "1" ]]; then
-          CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $(( $LABELLING_SIZE * 2 )) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
-          eval $CMD
-        else 
-          LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
-        fi
-#        echo "$LINE read from $FILENAME"
-        LINE_COUNTER=LINE_COUNTER+1
-      done
-      CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(( $OFFSET_WATERMARK_Y + $(( $LABELLING_SIZE * 2 )) )) \"${LABELLING_TEXT}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
-      eval $CMD
-    fi
+  if [[ -f "$FN_TXT" ]]; then
+    echo "TEXTFILE found:"
+    echo "$FN_TXT"
+    FILENAME="$DIR_SRCIMG/$FN_TXT"
+    LINE_COUNTER=1
+    CAPTION=""
+    TEXTCOLOR="#808080"
+    LABELLING_TEXT=""
+    IFS=$'\n'
+    for LINE in $(cat $FILENAME); do
+      if [[ $LINE_COUNTER = "1" ]]; then
+        CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $(($LABELLING_SIZE * 2)) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+        eval $CMD
+      else
+        LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
+      fi
+      #        echo "$LINE read from $FILENAME"
+      LINE_COUNTER=LINE_COUNTER+1
+    done
+    CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) \"${LABELLING_TEXT}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+    eval $CMD
+  fi
   # TODO convert all sizes here maybe via loop
   # 4k
   CMD="$CONVERT \"$DIR_WATERMARK_6k/$FN\" -resize $r4k -strip -quality $QUALITYJPG  \"$DIR_WATERMARK_4k/$FN\" "
@@ -227,22 +240,15 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   echo -e "resizing: - >$FN< -- CMD: $CMD\n"
   eval $CMD
   #  use guezli compression for jpgs for smaller filesizes
-  if [ $GUETZLI_EXISTS == "YES" ]; then
-    echo "Guezli compression = on"
-    # compress images for web
-    # basic syntax:
-    # guetzli --quality 85 image.jpg image-out.jpg
-    FNW="web_"$FN
-    echo "Guezli 6k"
-    #    echo $CMD
-    CMD="$GUETZLI --quality $QUALITYGZLY  \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FNW\"  " ;     echo "$CMD" >> ../guezli_6k_list.sh
-    
-#    make_guezli "$DIR_WATERMARK_6k/$FN" "$DIR_WATERMARK_6k/$FNW"
-    echo "Guezli 4k"
-    make_guezli "$DIR_WATERMARK_4k/$FN" "$DIR_WATERMARK_4k/$FNW"
-    echo "Guezli 2k"
-    make_guezli "$DIR_WATERMARK_2k/$FN" "$DIR_WATERMARK_2k/$FNW"
-  fi
+  # compress images for web
+  # basic syntax:
+  # guetzli --quality 85 image.jpg image-out.jpg
+  FNW="web_"$FN
+  make_guezli "$DIR_WATERMARK_6k/$FN" "$DIR_WATERMARK_6k/$FNW"
+  echo "Guezli 4k"
+  make_guezli "$DIR_WATERMARK_4k/$FN" "$DIR_WATERMARK_4k/$FNW"
+  echo "Guezli 2k"
+  make_guezli "$DIR_WATERMARK_2k/$FN" "$DIR_WATERMARK_2k/$FNW"
 done
 
 after=$(date +%s)
