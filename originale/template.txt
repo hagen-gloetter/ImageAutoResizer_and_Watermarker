@@ -1,6 +1,10 @@
 M
-Ort: Sternwarte Höfingen
-Konstellation: 
+Datum:  
+Sternbild: 
 Magnitude: 
 Entfernung:  Lj
-Durchmesser: Lj
+Durchmesser:  Lj
+Instrument: 5″ Starfire Refractor
+Instrument: 16″ Ritchey-Chrétien-Teleskop
+Belichtungszeit:
+Aufnahmen:
