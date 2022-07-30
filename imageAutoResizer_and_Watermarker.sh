@@ -252,3 +252,4 @@ echo $RT
 echo $RT >script_execution_time.txt
 
 exit
+
