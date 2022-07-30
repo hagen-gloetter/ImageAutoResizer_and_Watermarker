@@ -8,9 +8,9 @@
 _self="${0##*/}"
 echo "$_self is called"
 
-if [[ $# -eq 0 ]] ; then
-    echo "Usage: $(basename $0) [foldername]" 
-    exit 1
+if [[ $# -eq 0 ]]; then
+  echo "Usage: $(basename $0) [foldername]"
+  exit 1
 fi
 
 ## or in usage() ##
@@ -21,9 +21,16 @@ shopt -s nullglob
 # use the nullglob option to simply ignore a failed match and not enter the body of the loop.
 COMPOSITE=$(which composite) # path to imagemagick compose
 CONVERT=$(which convert)
+QUALITYJPG="85"
+GUETZLI_EXISTS="NO"
 GUETZLI=$(which guetzli)
-QUALITY="75"
-cat /etc/issue | grep -i "ubuntu"
+if [ $? -eq 0 ]; then
+  echo "Guezli Compression found"
+  GUETZLI_EXISTS="YES"
+  QUALITYGZLY=$QUALITYJPG
+  QUALITYJPG=100 # render jpgs 100% quality and do compression by guezli
+fi
+UBUNTU=$(cat /etc/issue | grep -i "ubuntu")
 if [ $? -eq 0 ]; then
   echo "Ubuntu detected"
   DIR_SCRIPT=$(dirname $(readlink -f $0))
@@ -80,6 +87,19 @@ function check_files_existance {
   fi
 }
 
+function make_guezli {
+    FN_IN="$1"
+    FN_OUT="$2"
+    echo "FN_IN=>$FN_IN<"
+    echo "FN_OUT=>$FN_OUT<"
+    gzbefore=$(date +%s) # get timing
+    CMD="$GUETZLI --quality $QUALITYGZLY \"$FN_IN\" \"$FN_OUT\" "
+    eval $CMD
+    gzafter=$(date +%s)
+    gzruntime=$(($gzafter - $gzbefore))
+    echo "guezli compression time: $gzruntime seconds"
+}
+
 function get_filename_without_extension {
   filename=$1
   FN_CUT="${filename%.*}"
@@ -88,7 +108,7 @@ function get_filename_without_extension {
 #  filename="${filename%.*}"
   return $FN_CUT
 }
-
+  
 # check if all needed DIR exist
 check_DIR $DIR_BASE
 check_DIR $DIR_SCRIPT
@@ -157,17 +177,16 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     WATERMARK_SE=$WATERMARK_SE_S
   fi
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
-  # TODO set both Watermarks at once if possible
   TRANDPARENZ="-dissolve 50%"
   TRANDPARENZ=""
   # OFFSET_WATERMARK_X=0 # debug
   CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANDPARENZ \( \"$WATERMARK_SW\"  \) \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
   echo "processing: - >$FN< -- CMD: $CMD"
   eval $CMD
-  # TODO set gloetter watermark only if filename containd "HG"
+  # set gloetter watermark only if filename containd "HG"
   case "$FN" in *HG*)
     echo "HG found in filename $FN"
-    CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \( \"$WATERMARK_SE\"  \) \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+    CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANDPARENZ \( \"$WATERMARK_SE\"  \) \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
     echo "processing: - >$FN< -- CMD: $CMD"
     eval $CMD
     ;;
@@ -199,16 +218,31 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
       eval $CMD
     fi
   # TODO convert all sizes here maybe via loop
-  
-    # 4k
-    CMD="$CONVERT \"$DIR_WATERMARK_6k/$FN\" -resize $r4k -strip -quality $QUALITY  \"$DIR_WATERMARK_4k/$FN\" "
-    echo -e "resizing: - >$FN< -- CMD: $CMD\n"
-    eval $CMD
-    # 2k
-    CMD="$CONVERT  \"$DIR_WATERMARK_6k/$FN\" -resize $r2k -strip -quality $QUALITY  \"$DIR_WATERMARK_2k/$FN\""
-    echo -e "resizing: - >$FN< -- CMD: $CMD\n"
-    eval $CMD
-    # TODO use brotli compression for jpgs for smaller filesizes
+  # 4k
+  CMD="$CONVERT \"$DIR_WATERMARK_6k/$FN\" -resize $r4k -strip -quality $QUALITYJPG  \"$DIR_WATERMARK_4k/$FN\" "
+  echo -e "resizing: - >$FN< -- CMD: $CMD\n"
+  eval $CMD
+  # 2k
+  CMD="$CONVERT  \"$DIR_WATERMARK_6k/$FN\" -resize $r2k -strip -quality $QUALITYJPG  \"$DIR_WATERMARK_2k/$FN\""
+  echo -e "resizing: - >$FN< -- CMD: $CMD\n"
+  eval $CMD
+  #  use guezli compression for jpgs for smaller filesizes
+  if [ $GUETZLI_EXISTS == "YES" ]; then
+    echo "Guezli compression = on"
+    # compress images for web
+    # basic syntax:
+    # guetzli --quality 85 image.jpg image-out.jpg
+    FNW="web_"$FN
+    echo "Guezli 6k"
+    #    echo $CMD
+    CMD="$GUETZLI --quality $QUALITYGZLY  \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FNW\"  " ;     echo "$CMD" >> ../guezli_6k_list.sh
+    
+#    make_guezli "$DIR_WATERMARK_6k/$FN" "$DIR_WATERMARK_6k/$FNW"
+    echo "Guezli 4k"
+    make_guezli "$DIR_WATERMARK_4k/$FN" "$DIR_WATERMARK_4k/$FNW"
+    echo "Guezli 2k"
+    make_guezli "$DIR_WATERMARK_2k/$FN" "$DIR_WATERMARK_2k/$FNW"
+  fi
 done
 
 after=$(date +%s)
@@ -218,19 +252,3 @@ echo $RT
 echo $RT >script_execution_time.txt
 
 exit
-
-# resize images for web
-
-  # basic syntax:
-  # guetzli --quality 85 image.jpg image-out.jpg
-  FNW="web_"$FN
-  CMD="$GUETZLI --quality 85 \"$DIR3/$FN\" \"$DIR3/$FNW\" "
-  echo "compressing: - >$FN< -- CMD: $CMD"
-  eval $CMD
-done
-cd ..
-after=$(date +%s)
-runtime=$((after - $before))
-RT="elapsed time: $runtime seconds"
-echo $RT
-echo $RT >script_execution_time.txt

@@ -1,0 +1,5 @@
+Mond
+Datum: 14.05.2022
+Entfernung: 384.400km
+Durchmesser: 3.475km
+Instrument: 5″ Starfire Refractor

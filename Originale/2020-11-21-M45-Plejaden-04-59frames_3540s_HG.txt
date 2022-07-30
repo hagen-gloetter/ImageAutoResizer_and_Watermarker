@@ -1,0 +1,9 @@
+M45 Plejaden
+Datum: 21.11.2020
+Sternbild: Stier
+Magnitude: 1,6
+Entfernung: 444 Lj
+Durchmesser: 35 Lj
+Instrument: 5″ Starfire Refractor
+Belichtungszeit: 3540s
+Aufnahmen: 59

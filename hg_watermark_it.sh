@@ -100,7 +100,15 @@ function make_guezli {
     echo "guezli compression time: $gzruntime seconds"
 }
 
-
+function get_filename_without_extension {
+  filename=$1
+  FN_CUT="${filename%.*}"
+#  filename=$(basename -- "$1")
+#  extension="${filename##*.}"
+#  filename="${filename%.*}"
+  return $FN_CUT
+}
+  
 # check if all needed DIR exist
 check_DIR $DIR_BASE
 check_DIR $DIR_SCRIPT
@@ -109,19 +117,13 @@ check_DIR $DIR_WATERMARK_IMAGES
 
 #DIR_BASE=`realpath $1`  # works
 ## SE
-WATERMARK_SE_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1600px.png"
-echo "WATERMARK_SE_L = $WATERMARK_SE_L"
-WATERMARK_SE_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png"
-echo "WATERMARK_SE_M = $WATERMARK_SE_M"
-WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"
-echo "WATERMARK_SE_S = $WATERMARK_SE_S"
+WATERMARK_SE_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1600px.png" ; echo "WATERMARK_SE_L = $WATERMARK_SE_L"
+WATERMARK_SE_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" ; echo "WATERMARK_SE_M = $WATERMARK_SE_M"
+WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"  ; echo "WATERMARK_SE_S = $WATERMARK_SE_S"
 ## SW
-WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png"
-echo "WATERMARK_SW_L = $WATERMARK_SW_L"
-WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"
-echo "WATERMARK_SW_M = $WATERMARK_SW_M"
-WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_500x150px.png"
-echo "WATERMARK_SW_S = $WATERMARK_SW_S"
+WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png" ; echo "WATERMARK_SW_L = $WATERMARK_SW_L"
+WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png" ; echo "WATERMARK_SW_M = $WATERMARK_SW_M"
+WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"; echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images
 DIR_WATERMARK=$DIR_BASE"/watermarked"
@@ -153,6 +155,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   WATERMARK_SW_WIDTH=$(($WIDTH / 4))
   WATERMARK_SE_WIDTH=$(($WIDTH / 5))
   OFFSET_WATERMARK_Y=100
+  LABELLING_SIZE=$(($WIDTH / 60))
   echo "WIDTH: $WIDTH"
   echo "OFFSET_WATERMARK_X: $OFFSET_WATERMARK_X"
   echo "WATERMARK_SW_WIDTH: $WATERMARK_SW_WIDTH"
@@ -175,7 +178,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   fi
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
   TRANDPARENZ="-dissolve 50%"
-  #  TRANDPARENZ=""
+  TRANDPARENZ=""
   # OFFSET_WATERMARK_X=0 # debug
   CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANDPARENZ \( \"$WATERMARK_SW\"  \) \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
   echo "processing: - >$FN< -- CMD: $CMD"
@@ -189,6 +192,31 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     ;;
   *) ;;
   esac
+  echo "Text Imprint"
+  FN_CUT="${FN%.*}"
+  FN_TXT=$FN_CUT".txt"
+    if [[ -f "$FN_TXT" ]]; then
+      echo "TEXTFILE found:"
+      echo "$FN_TXT"
+      FILENAME="$DIR_SRCIMG/$FN_TXT"
+      LINE_COUNTER=1
+      CAPTION=""
+      TEXTCOLOR="#808080"
+      LABELLING_TEXT=""
+      IFS=$'\n'
+      for LINE in `cat $FILENAME`; do
+        if [[ $LINE_COUNTER = "1" ]]; then
+          CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $(( $LABELLING_SIZE * 2 )) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+          eval $CMD
+        else 
+          LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
+        fi
+#        echo "$LINE read from $FILENAME"
+        LINE_COUNTER=LINE_COUNTER+1
+      done
+      CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(( $OFFSET_WATERMARK_Y + $(( $LABELLING_SIZE * 2 )) )) \"${LABELLING_TEXT}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+      eval $CMD
+    fi
   # TODO convert all sizes here maybe via loop
   # 4k
   CMD="$CONVERT \"$DIR_WATERMARK_6k/$FN\" -resize $r4k -strip -quality $QUALITYJPG  \"$DIR_WATERMARK_4k/$FN\" "
