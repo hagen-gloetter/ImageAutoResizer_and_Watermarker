@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
-Instrument: 5″ Starfire Refractor
+M51 Whirlpool Galaxie
+Datum: 10.03.2022
+Sternbild: Jagdhunde
+Magnitude: 8.0
+Entfernung:  37.000 Lj
+Durchmesser: 60.000 Lj
 Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 2850s
+Aufnahmen: 95

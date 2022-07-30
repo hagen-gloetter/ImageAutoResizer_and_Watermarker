@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
-Instrument: 5″ Starfire Refractor
+M81 Bodes Glaxie
+Datum: 13.02.2022
+Sternbild: Großer Wagen
+Magnitude: 8.5
+Entfernung: 11.000 Lj
+Durchmesser: 90.000 Lj
 Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 660s
+Aufnahmen: 11

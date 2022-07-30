@@ -1,10 +1,9 @@
-M
-Datum:  
-Sternbild: 
-Magnitude: 
-Entfernung:  Lj
-Durchmesser:  Lj
+M17 Omeganebel
+Datum: 02.07.2022
+Sternbild: Schütze
+Magnitude: 7.0
+Entfernung: 5.000 Lj
+Durchmesser: 22 Lj
 Instrument: 5″ Starfire Refractor
-Instrument: 16″ Ritchey-Chrétien-Teleskop
-Belichtungszeit:
-Aufnahmen:
+Belichtungszeit: 810s
+Aufnahmen: 27
