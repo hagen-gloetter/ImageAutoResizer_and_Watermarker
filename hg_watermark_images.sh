@@ -92,9 +92,9 @@ function check_files_existance {
 function make_guetzli {
   FN_IN="$1"
   FN_OUT="$2"
-  echo "FN_IN =>$FN_IN<"
-  echo "FN_OUT=>$FN_OUT<"
-  echo "guetzli compression = on"
+  #echo "FN_IN =>$FN_IN<"
+  #echo "FN_OUT=>$FN_OUT<"
+  #echo "guetzli compression = on"
   CMD="$GUETZLI --quality $QUALITYGZLY \"$FN_IN\" \"$FN_OUT\"  "
   if [ $GUETZLI_EXISTS == "YES" ]; then
     gzbefore=$(date +%s) # get timing
@@ -163,6 +163,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # identify testimg.jpg
   # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
   # get width of image
+  echo "PROCESSING: >$FN<"
   WIDTH=$(identify -ping -format '%w' "$FN")
   OFFSET_WATERMARK_X=$(($WIDTH / 50))
   WATERMARK_SW_WIDTH=$(($WIDTH / 4))
@@ -194,15 +195,15 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   TRANSPARENZ=""
   # OFFSET_WATERMARK_X=0 # debug
   CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SW\"  \) \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
-  echo "Adding Watermark SouthWest to >$FN<"
-  echo "CMD: $CMD"
+  echo "Adding Watermark SouthWest"
+  #echo "CMD: $CMD"
   eval $CMD
   # set gloetter watermark only if filename containd "HG"
   case "$FN" in *HG*)
     echo "HG found in filename $FN"
     CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SE\"  \) \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
-    echo "Adding Watermark SouthEast to >$FN<"
-    echo "CMD: $CMD"
+    echo "Adding Watermark SouthEast"
+#    echo "CMD: $CMD"
     eval $CMD
     ;;
   *) ;;
@@ -233,7 +234,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   else
     echo "TEXTFILE NOT found: >$FN_TXT<"
   fi
-  # TODO convert all sizes here maybe via loop
+  # convert all sizes here maybe via loop ;-)
   # 4k
   CMD="$CONVERT \"$DIR_WATERMARK_6k/$FN\" -resize $r4k -strip -quality $QUALITYJPG  \"$DIR_WATERMARK_4k/$FN\" "
   echo "4k resizing"
