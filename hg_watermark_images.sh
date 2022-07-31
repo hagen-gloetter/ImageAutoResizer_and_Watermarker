@@ -218,7 +218,6 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     ;;
   *) ;;
   esac
-  exit
   echo "Text Imprint"
   FN_CUT="${FN%.*}"
   FN_TXT=$FN_CUT".txt"
