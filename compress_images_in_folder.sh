@@ -1,5 +1,5 @@
 #! /bin/bash
-
+shopt -s nullglob
 _self="${0##*/}"
 echo "$_self is called"
 
@@ -28,8 +28,8 @@ function check_DIR {
 function make_guetzli {
     FN_IN="$1"
     FN_OUT="${FN%.*}_web.jpg" # add _web to filename
-    echo "FN_IN =>$FN_IN<"
-    echo "FN_OUT=>$FN_OUT<"
+#    echo "FN_IN =>$FN_IN<"
+#    echo "FN_OUT=>$FN_OUT<"
 
     if [ -f "$FN_IN" ]; then
         case "$FN_IN" in *_web*) # not double compress
@@ -60,9 +60,11 @@ check_DIR $DIR_SRCIMG
 cd $DIR_SRCIMG
 N=4
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
+#for $FN in $FILELIST ; do
     ((i = i % N))
     ((i++ == 0)) && wait
     echo "$COUNTER PROCESSING >$FN<"
     (( COUNTER=COUNTER+1 ))
     make_guetzli "$FN" &
 done
+
