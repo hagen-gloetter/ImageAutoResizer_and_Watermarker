@@ -4,6 +4,6 @@ Sternbild: Skorpion
 Magnitude: 7.5
 Entfernung: 7.000 Lj
 Durchmesser: 75 Lj
-Instrument: 5″ Starfire Refractor
+Instrument: 5″ Starfire Refraktor
 Belichtungszeit: 900s
 Aufnahmen: 30

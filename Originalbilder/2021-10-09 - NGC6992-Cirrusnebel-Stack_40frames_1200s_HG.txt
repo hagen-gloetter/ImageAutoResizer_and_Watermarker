@@ -4,6 +4,6 @@ Sternbild: Schwan
 Magnitude: 7.0
 Entfernung: 1.470 Lj
 Durchmesser: 100 Lj
-Instrument: 5″ Starfire Refractor
+Instrument: 5″ Starfire Refraktor
 Belichtungszeit: 1200s
 Aufnahmen: 40

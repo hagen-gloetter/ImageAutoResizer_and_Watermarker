@@ -2,8 +2,8 @@ M51 Whirlpool Galaxie
 Datum: 10.03.2022
 Sternbild: Jagdhunde
 Magnitude: 8.0
-Entfernung:  37.000 Lj
+Entfernung: 31 Mio. Lj
 Durchmesser: 60.000 Lj
-Instrument: 16″ Ritchey-Chrétien-Teleskop
+Instrument: 16″ Ritchey-Chrétien
 Belichtungszeit: 2850s
 Aufnahmen: 95

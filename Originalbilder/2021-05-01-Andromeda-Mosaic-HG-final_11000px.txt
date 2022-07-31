@@ -4,7 +4,7 @@ Sternbild: Andromeda
 Magnitude: 3,4
 Entfernung:  2.537.000 Lj
 Durchmesser: 220.000 Lj
-Instrument: 16″ Ritchey-Chrétien-Teleskop
+Instrument: 16″ Ritchey-Chrétien
 Belichtungszeit: 3.600s
 Aufnahmen: 80
 Sterne: 1 Billion

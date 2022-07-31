@@ -4,6 +4,6 @@ Sternbild: Schütze
 Magnitude: 6.5
 Entfernung: 10.000 Lj
 Durchmesser: 100 Lj
-Instrument: 5″ Starfire Refractor
+Instrument: 5″ Starfire Refraktor
 Belichtungszeit: 420s
 Aufnahmen: 14

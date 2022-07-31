@@ -2,5 +2,5 @@ Mond
 Datum: 12.02.2022
 Entfernung: 384.400km
 Durchmesser: 3.475km
-Instrument: 5″ Starfire Refractor
+Instrument: 5″ Starfire Refraktor
 Aufnahmen: 9

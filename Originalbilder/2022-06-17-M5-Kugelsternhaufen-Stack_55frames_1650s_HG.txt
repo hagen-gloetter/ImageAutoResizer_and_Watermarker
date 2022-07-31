@@ -4,6 +4,6 @@ Sternbild: Schlangen
 Magnitude: 7.0
 Entfernung: 23.000 Lj
 Durchmesser: 165 Lj
-Instrument: 5″ Starfire Refractor
+Instrument: 5″ Starfire Refraktor
 Belichtungszeit: 1650s
 Aufnahmen: 55

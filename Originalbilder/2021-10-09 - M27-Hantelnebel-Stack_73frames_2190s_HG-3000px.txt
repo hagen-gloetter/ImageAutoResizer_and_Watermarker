@@ -4,6 +4,6 @@ Sternbild: Fuchs
 Magnitude: 7,5
 Entfernung: 1.360 Lj
 Durchmesser: 2,88 Lj
-Instrument: 5″ Starfire Refractor
+Instrument: 5″ Starfire Refraktor
 Belichtungszeit: 2190s
 Aufnahmen: 73

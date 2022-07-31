@@ -4,6 +4,6 @@ Sternbild: Leier
 Magnitude: 8,8
 Entfernung: 2.283 Lj
 Durchmesser: 2,6 Lj
-Instrument: 5″ Starfire Refractor
+Instrument: 5″ Starfire Refraktor
 Belichtungszeit: 770s
 Aufnahmen: 77

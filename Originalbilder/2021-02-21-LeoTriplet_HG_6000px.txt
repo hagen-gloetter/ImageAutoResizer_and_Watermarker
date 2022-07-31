@@ -3,7 +3,9 @@ Datum: 21.02.2021
 Sternbild: Löwe
 Magnitude: 8,9
 Entfernung: 35 Mio Lj
-Durchmesser: 100.000 Lj
-Instrument: 16″ Ritchey-Chrétien-Teleskop
+M65 Durchmesser: 80.000 Lj 
+M66 Durchmesser: 75 000 Lj
+NGC3628 Durchmesser: 300 000 Lj
+Instrument: 16″ Ritchey-Chrétien
 Belichtungszeit: 960s
 Aufnahmen: 16

@@ -4,6 +4,6 @@ Sternbild: Einhorn
 Magnitude: 6.0
 Entfernung: 5.219 Lj
 Durchmesser: 130 Lj
-Instrument: 5″ Starfire Refractor
+Instrument: 5″ Starfire Refraktor
 Belichtungszeit: 930s
 Aufnahmen: 31

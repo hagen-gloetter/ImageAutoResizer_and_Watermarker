@@ -1,9 +1,9 @@
-M51 Whirlpool-Galaxie
+M51 Whirlpool Galaxie
 Datum: 14.01.14 
 Sternbild: Jagdhunde
 Magnitude: 8.0
-Entfernung:  37.000 Lj
+Entfernung: 31 Mio. Lj
 Durchmesser: 60.000 Lj
-Instrument: 5″ Starfire Refractor
+Instrument: 5″ Starfire Refraktor
 Belichtungszeit: 1680s
 Aufnahmen: 56
