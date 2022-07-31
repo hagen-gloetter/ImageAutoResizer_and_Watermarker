@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# 2022-07 Code by Ramona and Hagen Glötter 
+# See www.gloetter.de
+
 # Setup on Mac:
 # brew install coreutils
 # brew install imagemagick
@@ -22,16 +25,6 @@ shopt -s nullglob
 COMPOSITE=$(which composite) # path to imagemagick compose
 CONVERT=$(which convert)
 QUALITYJPG="85"
-GUETZLI_EXISTS="NO"
-GUETZLI=$(which guetzli)
-if [ $? -eq 0 ]; then
-  echo "guetzli Compression found"
-  GUETZLI_EXISTS="YES"
-  QUALITYGZLY=$QUALITYJPG
-  #QUALITYJPG=100 # better! render jpgs 100% quality and do compression by guetzli
-fi
-GUETZLI_EXISTS="NO"                     # turn it off manual for faster debug time
-cat /dev/null > ../guetzli_compression_list.sh # clear list
 UBUNTU=$(cat /etc/issue | grep -i "ubuntu")
 if [ $? -eq 0 ]; then
   echo "Ubuntu detected"
@@ -89,23 +82,6 @@ function check_files_existance {
   fi
 }
 
-function make_guetzli {
-  FN_IN="$1"
-  FN_OUT="$2"
-  #echo "FN_IN =>$FN_IN<"
-  #echo "FN_OUT=>$FN_OUT<"
-  #echo "guetzli compression = on"
-  CMD="$GUETZLI --quality $QUALITYGZLY \"$FN_IN\" \"$FN_OUT\"  "
-  if [ $GUETZLI_EXISTS == "YES" ]; then
-    gzbefore=$(date +%s) # get timing
-    eval $CMD
-    gzafter=$(date +%s)
-    gzruntime=$(($gzafter - $gzbefore))
-    echo "guetzli compression time: $gzruntime seconds"
-  else
-    echo "$CMD" >> ../guetzli_compression_list.sh
-  fi
-}
 
 function get_filename_without_extension {
   filename=$1
@@ -124,19 +100,13 @@ check_DIR $DIR_WATERMARK_IMAGES
 
 #DIR_BASE=`realpath $1`  # works
 ## SE
-WATERMARK_SE_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1600px.png"
-echo "WATERMARK_SE_L = $WATERMARK_SE_L"
-WATERMARK_SE_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png"
-echo "WATERMARK_SE_M = $WATERMARK_SE_M"
-WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"
-echo "WATERMARK_SE_S = $WATERMARK_SE_S"
+WATERMARK_SE_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1600px.png" ; echo "WATERMARK_SE_L = $WATERMARK_SE_L"
+WATERMARK_SE_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" ; echo "WATERMARK_SE_M = $WATERMARK_SE_M"
+WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png" ; echo "WATERMARK_SE_S = $WATERMARK_SE_S"
 ## SW
-WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png"
-echo "WATERMARK_SW_L = $WATERMARK_SW_L"
-WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png"
-echo "WATERMARK_SW_M = $WATERMARK_SW_M"
-WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"
-echo "WATERMARK_SW_S = $WATERMARK_SW_S"
+WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png" ; echo "WATERMARK_SW_L = $WATERMARK_SW_L"
+WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png" ; echo "WATERMARK_SW_M = $WATERMARK_SW_M"
+WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png" ; echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images
 DIR_WATERMARK=$DIR_BASE"/watermarked"
@@ -157,16 +127,22 @@ cd $DIR_BASE
 
 # Watermark images
 before=$(date +%s) # get timing
+COUNTER=1
 cd $DIR_SRCIMG
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   FN_CUT="${FN%.*}"
   FQFN_6k=$DIR_WATERMARK_6k/$FN"-"$r6k"px.jpg"
   FQFN_4k=$DIR_WATERMARK_4k/$FN"-"$r4k"px.jpg"
   FQFN_2k=$DIR_WATERMARK_2k/$FN"-"$r2k"px.jpg"
-  echo "PROCESSING: >$FN<"
-  if [ -f "$FQFN_6k" ]; then # if file already exist -> skip it
-    echo "SKIP FILE - File exists: >$FN<"
-    continue
+  echo "$COUNTER PROCESSING: >$FN<"
+  let "COUNTER=COUNTER+1"
+  if [ -f "$FQFN_6k" ]; then     # if file already exist -> skip it
+    if [ -f "$FQFN_4k" ]; then   # if file already exist -> skip it
+      if [ -f "$FQFN_2k" ]; then # if file already exist -> skip it
+        echo "SKIP FILE - File exists: >$FN<"
+        continue
+      fi
+    fi
   fi
   # basic syntax:
   # identify testimg.jpg
@@ -236,7 +212,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
         LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
       fi
       #        echo "$LINE read from $FILENAME"
-      LINE_COUNTER=LINE_COUNTER+1
+      let "LINE_COUNTER=LINE_COUNTER+1"
     done
     CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) \"${LABELLING_TEXT}\" \"$FQFN_6k\" \"$FQFN_6k\""
     eval $CMD
@@ -255,15 +231,8 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   #echo "  - >$FN< -- CMD: $CMD\n"
   eval "$CMD &"
   #  use guetzli compression for jpgs for smaller filesizes
-  # compress images for web
-  # basic syntax:
-  # guetzli --quality 85 image.jpg image-out.jpg
-  FNW="${FN%.*}_web.jpg" # add _web to filename
-  make_guetzli "$FQFN_6k" "$FQFN_6kW"
-  echo "guetzli 4k"
-  make_guetzli "$FQFN_4k" "$FQFN_4kW"
-  echo "guetzli 2k"
-  make_guetzli "$FQFN_2k" "$FQFN_2kW"
+  # moved to external code ;-)
+
 done
 
 after=$(date +%s)
