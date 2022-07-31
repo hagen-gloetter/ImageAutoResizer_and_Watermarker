@@ -28,10 +28,10 @@ if [ $? -eq 0 ]; then
   echo "guetzli Compression found"
   GUETZLI_EXISTS="YES"
   QUALITYGZLY=$QUALITYJPG
-  QUALITYJPG=100 # render jpgs 100% quality and do compression by guetzli
+  #QUALITYJPG=100 # better! render jpgs 100% quality and do compression by guetzli
 fi
 GUETZLI_EXISTS="NO"                     # turn it off manual for faster debug time
-echo "" >../guetzli_compression_list.sh # clear list
+cat /dev/null > ../guetzli_compression_list.sh # clear list
 UBUNTU=$(cat /etc/issue | grep -i "ubuntu")
 if [ $? -eq 0 ]; then
   echo "Ubuntu detected"
@@ -51,7 +51,7 @@ echo "DIR_SCRIPT: $DIR_SCRIPT"
 echo "DIR_WATERMARK_IMAGES: $DIR_WATERMARK_IMAGES"
 
 # Resolutions to generate
-# TODO Make this as an array and loop through the resolutions an generate all dirs on the fly
+# IDEA Make this as an array and loop through the resolutions an generate all dirs on the fly
 r6k=6000
 r4k=4000
 r2k=1680
@@ -103,7 +103,7 @@ function make_guetzli {
     gzruntime=$(($gzafter - $gzbefore))
     echo "guetzli compression time: $gzruntime seconds"
   else
-    echo "$CMD" >>../guetzli_compression_list.sh
+    echo "$CMD" >> ../guetzli_compression_list.sh
   fi
 }
 
@@ -164,7 +164,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
   # get width of image
   echo "PROCESSING: >$FN<"
-  if [ -f "$DIR_WATERMARK_6k/$FN" ]; then # if file already exist -> skip it
+  if [ -f "$FQFN_6k" ]; then # if file already exist -> skip it
     echo "SKIP FILE - File exists: >$FN<"
     continue
   fi
@@ -198,15 +198,20 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
   TRANSPARENZ="-dissolve 50%"
   TRANSPARENZ=""
+  FN_CUT="${FN%.*}"
+  FQFN_6k=$DIR_WATERMARK_6k/$FN"-"$r6k"px.jpg"
+  FQFN_4k=$DIR_WATERMARK_4k/$FN"-"$r4k"px.jpg"
+  FQFN_2k=$DIR_WATERMARK_2k/$FN"-"$r2k"px.jpg"
+
   # OFFSET_WATERMARK_X=0 # debug
-  CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SW\"  \) \"$DIR_SRCIMG/$FN\" \"$DIR_WATERMARK_6k/$FN\" "
+  CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SW\"  \) \"$DIR_SRCIMG/$FN\" \"$FQFN_6k\" "
   echo "Adding Watermark SouthWest"
   #echo "CMD: $CMD"
   eval $CMD
   # set gloetter watermark only if filename containd "HG"
   case "$FN" in *HG*)
     echo "HG found in filename $FN"
-    CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SE\"  \) \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\" "
+    CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SE\"  \) \"$FQFN_6k\" \"$FQFN_6k\" "
     echo "Adding Watermark SouthEast"
     #    echo "CMD: $CMD"
     eval $CMD
@@ -227,7 +232,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     IFS=$'\n'
     for LINE in $(cat $FILENAME); do
       if [[ $LINE_COUNTER = "1" ]]; then
-        CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $(($LABELLING_SIZE * 2)) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+        CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $(($LABELLING_SIZE * 2)) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$FQFN_6k\" \"$FQFN_6k\""
         eval $CMD
       else
         LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
@@ -235,19 +240,19 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
       #        echo "$LINE read from $FILENAME"
       LINE_COUNTER=LINE_COUNTER+1
     done
-    CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) \"${LABELLING_TEXT}\" \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+    CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) \"${LABELLING_TEXT}\" \"$FQFN_6k\" \"$FQFN_6k\""
     eval $CMD
   else
     echo "TEXTFILE NOT found: >$FN_TXT<"
   fi
   # convert all sizes here maybe via loop ;-)
   # 4k
-  CMD="$CONVERT \"$DIR_WATERMARK_6k/$FN\" -resize $r4k -strip -quality $QUALITYJPG  \"$DIR_WATERMARK_4k/$FN\" "
+  CMD="$CONVERT \"$FQFN_6k\" -resize $r4k -strip -quality $QUALITYJPG  \"$FQFN_4k\" "
   echo "4k resizing"
   #echo "  - >$FN< -- CMD: $CMD\n"
   eval $CMD
   # 2k
-  CMD="$CONVERT  \"$DIR_WATERMARK_6k/$FN\" -resize $r2k -strip -quality $QUALITYJPG  \"$DIR_WATERMARK_2k/$FN\""
+  CMD="$CONVERT  \"$FQFN_6k\" -resize $r2k -strip -quality $QUALITYJPG  \"$FQFN_2k\""
   echo "2k resizing"
   #echo "  - >$FN< -- CMD: $CMD\n"
   eval $CMD
@@ -255,13 +260,12 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # compress images for web
   # basic syntax:
   # guetzli --quality 85 image.jpg image-out.jpg
-  FNW="web_"$FN
   FNW="${FN%.*}_web.jpg" # add _web to filename
-  make_guetzli "$DIR_WATERMARK_6k/$FN" "$DIR_WATERMARK_6k/$FNW"
+  make_guetzli "$FQFN_6k" "$FQFN_6kW"
   echo "guetzli 4k"
-  make_guetzli "$DIR_WATERMARK_4k/$FN" "$DIR_WATERMARK_4k/$FNW"
+  make_guetzli "$FQFN_4k" "$FQFN_4kW"
   echo "guetzli 2k"
-  make_guetzli "$DIR_WATERMARK_2k/$FN" "$DIR_WATERMARK_2k/$FNW"
+  make_guetzli "$FQFN_2k" "$FQFN_2kW"
 done
 
 after=$(date +%s)
