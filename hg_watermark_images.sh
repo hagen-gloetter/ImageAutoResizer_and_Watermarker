@@ -249,12 +249,12 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   CMD="$CONVERT \"$FQFN_6k\" -resize $r4k -strip -quality $QUALITYJPG  \"$FQFN_4k\" "
   echo "4k resizing"
   #echo "  - >$FN< -- CMD: $CMD\n"
-  eval $CMD
+  eval "$CMD &"
   # 2k
   CMD="$CONVERT  \"$FQFN_6k\" -resize $r2k -strip -quality $QUALITYJPG  \"$FQFN_2k\""
   echo "2k resizing"
   #echo "  - >$FN< -- CMD: $CMD\n"
-  eval $CMD
+  eval "$CMD &"
   #  use guetzli compression for jpgs for smaller filesizes
   # compress images for web
   # basic syntax:
