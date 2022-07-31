@@ -159,16 +159,19 @@ cd $DIR_BASE
 before=$(date +%s) # get timing
 cd $DIR_SRCIMG
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
-  # basic syntax:
-  # identify testimg.jpg
-  # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
-  # get width of image
+  FN_CUT="${FN%.*}"
+  FQFN_6k=$DIR_WATERMARK_6k/$FN"-"$r6k"px.jpg"
+  FQFN_4k=$DIR_WATERMARK_4k/$FN"-"$r4k"px.jpg"
+  FQFN_2k=$DIR_WATERMARK_2k/$FN"-"$r2k"px.jpg"
   echo "PROCESSING: >$FN<"
   if [ -f "$FQFN_6k" ]; then # if file already exist -> skip it
     echo "SKIP FILE - File exists: >$FN<"
     continue
   fi
-
+  # basic syntax:
+  # identify testimg.jpg
+  # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
+  # get width of image
   WIDTH=$(identify -ping -format '%w' "$FN")
   OFFSET_WATERMARK_X=$(($WIDTH / 50))
   WATERMARK_SW_WIDTH=$(($WIDTH / 4))
@@ -198,10 +201,6 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
   TRANSPARENZ="-dissolve 50%"
   TRANSPARENZ=""
-  FN_CUT="${FN%.*}"
-  FQFN_6k=$DIR_WATERMARK_6k/$FN"-"$r6k"px.jpg"
-  FQFN_4k=$DIR_WATERMARK_4k/$FN"-"$r4k"px.jpg"
-  FQFN_2k=$DIR_WATERMARK_2k/$FN"-"$r2k"px.jpg"
 
   # OFFSET_WATERMARK_X=0 # debug
   CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SW\"  \) \"$DIR_SRCIMG/$FN\" \"$FQFN_6k\" "
