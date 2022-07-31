@@ -212,7 +212,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
         LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
       fi
       #        echo "$LINE read from $FILENAME"
-      let "LINE_COUNTER=LINE_COUNTER+1"
+      (( LINE_COUNTER=LINE_COUNTER+1 ))
     done
     CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) \"${LABELLING_TEXT}\" \"$FQFN_6k\" \"$FQFN_6k\""
     eval $CMD

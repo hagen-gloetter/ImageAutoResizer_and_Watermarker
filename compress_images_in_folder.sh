@@ -62,7 +62,7 @@ N=4
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     ((i = i % N))
     ((i++ == 0)) && wait
-    echo "$COUNTER PROCESSING $FN"
-    let "COUNTER=COUNTER+1"
+    echo "$COUNTER PROCESSING >$FN<"
+    (( COUNTER=COUNTER+1 ))
     make_guetzli "$FN" &
 done
