@@ -30,7 +30,7 @@ if [ $? -eq 0 ]; then
   QUALITYGZLY=$QUALITYJPG
   QUALITYJPG=100 # render jpgs 100% quality and do compression by guetzli
 fi
-GUETZLI_EXISTS="NO"                    # turn it off manual for faster debug time
+GUETZLI_EXISTS="NO"                     # turn it off manual for faster debug time
 echo "" >../guetzli_compression_list.sh # clear list
 UBUNTU=$(cat /etc/issue | grep -i "ubuntu")
 if [ $? -eq 0 ]; then
@@ -164,6 +164,11 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
   # get width of image
   echo "PROCESSING: >$FN<"
+  if [ -f "$DIR_WATERMARK_6k/$FN" ]; then # if file already exist -> skip it
+    echo "SKIP FILE - File exists: >$FN<"
+    continue
+  fi
+
   WIDTH=$(identify -ping -format '%w' "$FN")
   OFFSET_WATERMARK_X=$(($WIDTH / 50))
   WATERMARK_SW_WIDTH=$(($WIDTH / 4))
@@ -194,20 +199,21 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   TRANSPARENZ="-dissolve 50%"
   TRANSPARENZ=""
   # OFFSET_WATERMARK_X=0 # debug
-  CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SW\"  \) \"$FN\" \"$DIR_WATERMARK_6k/$FN\""
+  CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SW\"  \) \"$DIR_SRCIMG/$FN\" \"$DIR_WATERMARK_6k/$FN\" "
   echo "Adding Watermark SouthWest"
   #echo "CMD: $CMD"
   eval $CMD
   # set gloetter watermark only if filename containd "HG"
   case "$FN" in *HG*)
     echo "HG found in filename $FN"
-    CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SE\"  \) \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\""
+    CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SE\"  \) \"$DIR_WATERMARK_6k/$FN\" \"$DIR_WATERMARK_6k/$FN\" "
     echo "Adding Watermark SouthEast"
-#    echo "CMD: $CMD"
+    #    echo "CMD: $CMD"
     eval $CMD
     ;;
   *) ;;
   esac
+  exit
   echo "Text Imprint"
   FN_CUT="${FN%.*}"
   FN_TXT=$FN_CUT".txt"
