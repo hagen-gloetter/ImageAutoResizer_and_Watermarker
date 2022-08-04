@@ -28,8 +28,8 @@ function check_DIR {
 function make_guetzli {
     FN_IN="$1"
     FN_OUT="${FN%.*}_web.jpg" # add _web to filename
-#    echo "FN_IN =>$FN_IN<"
-#    echo "FN_OUT=>$FN_OUT<"
+    #    echo "FN_IN =>$FN_IN<"
+    #    echo "FN_OUT=>$FN_OUT<"
 
     if [ -f "$FN_IN" ]; then
         case "$FN_IN" in *_web*) # not double compress
@@ -37,7 +37,10 @@ function make_guetzli {
             continue
             ;;
         esac
-
+        if [ -f "$FN_OUT" ]; then
+            echo "SKIP: Output exists: $FN_OUT"
+            continue
+        fi
         if [ ! -f "$FN_OUT" ]; then
             echo "Processing: $FN_IN"
             CMD="$GUETZLI --quality $QUALITYGZLY \"$FN_IN\" \"$FN_OUT\"  "
@@ -60,11 +63,10 @@ check_DIR $DIR_SRCIMG
 cd $DIR_SRCIMG
 N=4
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
-#for $FN in $FILELIST ; do
+    #for $FN in $FILELIST ; do
     ((i = i % N))
     ((i++ == 0)) && wait
     echo "$COUNTER PROCESSING >$FN<"
-    (( COUNTER=COUNTER+1 ))
+    ((COUNTER = COUNTER + 1))
     make_guetzli "$FN" &
 done
-
