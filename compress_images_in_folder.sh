@@ -8,6 +8,7 @@ if [[ $# -eq 0 ]]; then
     exit 1
 fi
 DIR_SRCIMG="$1"
+DIR_WEB="web"
 
 QUALITYGZLY=85
 GUETZLI=$(which guetzli)
@@ -18,6 +19,9 @@ else
     exit 1
 fi
 COUNTER=1
+
+# Functions
+
 function check_DIR {
     DIR=$1
     if [ ! -d "$DIR" ]; then
@@ -25,12 +29,27 @@ function check_DIR {
         exit 1
     fi
 }
+# functions
+function check_and_create_DIR {
+    DIR=$1
+    #  [ -d "$DIR" ] && echo "Directory $DIR exists. -> OK" || mkdir $DIR # works but not so verbose
+    if [ -d "$DIR" ]; then
+        echo "${DIR} exists -> OK"
+    else
+        mkdir $DIR
+        echo "Error: ${DIR} not found. Creating."
+    fi
+    # check if it worked
+    if [ ! -d "$DIR" ]; then
+        echo "Error: ${DIR} CAN NOT CREATE --> EXIT."
+        exit 1
+    fi
+}
 function make_guetzli {
     FN_IN="$1"
-    FN_OUT="${FN%.*}_web.jpg" # add _web to filename
-    #    echo "FN_IN =>$FN_IN<"
-    #    echo "FN_OUT=>$FN_OUT<"
-
+    FN_OUT="$DIR_WEB/${FN%.*}_web.jpg" # add _web to filename
+    # echo "FN_IN =>$FN_IN<"
+    # echo "FN_OUT=>$FN_OUT<"
     if [ -f "$FN_IN" ]; then
         case "$FN_IN" in *_web*) # not double compress
             echo "_web found in filename "
@@ -61,6 +80,7 @@ function make_guetzli {
 
 check_DIR $DIR_SRCIMG
 cd $DIR_SRCIMG
+check_and_create_DIR $DIR_WEB
 N=4
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     #for $FN in $FILELIST ; do
