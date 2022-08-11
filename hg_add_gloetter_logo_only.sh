@@ -12,14 +12,10 @@ _self="${0##*/}"
 echo "$_self is called"
 
 if [[ $# -eq 0 ]]; then
-  echo "Usage: $(basename $0) [foldername]"
+  echo "Usage: $(basename "$0") [Picture-Foldername]"
   exit 1
 fi
 
-## or in usage() ##
-usage() {
-  echo "$_self: Picture-Foldername"
-}
 shopt -s nullglob
 # use the nullglob option to simply ignore a failed match and not enter the body of the loop.
 COMPOSITE=$(which composite) # path to imagemagick compose
@@ -27,13 +23,13 @@ CONVERT=$(which convert)
 QUALITYJPG="85"
 UBUNTU=$(cat /etc/issue | grep -i "ubuntu")
 if [ $? -eq 0 ]; then
-  echo "Ubuntu detected"
-  DIR_SCRIPT=$(dirname $(readlink -f $0))
-  DIR_SRCIMG=$(readlink -f $1) # works on all *nix systems to make path absolute
+  echo "$UBUNTU detected"
+  DIR_SCRIPT=$(dirname "$(readlink -f "$0")")
+  DIR_SRCIMG=$(readlink -f "$1") # works on all *nix systems to make path absolute
 else
   echo "MacOS detected"
-  DIR_SCRIPT=$(dirname $(greadlink -f $0))
-  DIR_SRCIMG=$(greadlink -f $1) # works on all *nix systems to make path absolute
+  DIR_SCRIPT=$(dirname "$(greadlink -f "$0")")
+  DIR_SRCIMG=$(greadlink -f "$1") # works on all *nix systems to make path absolute
 fi
 DIR_BASE=$(pwd) # does sometimes not work :-(
 DIR_WATERMARK_IMAGES="$DIR_SCRIPT/watermark-images"
@@ -64,7 +60,7 @@ function check_and_create_DIR {
   if [ -d "$DIR" ]; then
     echo "${DIR} exists -> OK"
   else
-    mkdir $DIR
+    mkdir "$DIR"
     echo "Error: ${DIR} not found. Creating."
   fi
   # check if it worked
@@ -88,14 +84,14 @@ function get_filename_without_extension {
   #  filename=$(basename -- "$1")
   #  extension="${filename##*.}"
   #  filename="${filename%.*}"
-  return $FN_CUT
+  return "$FN_CUT"
 }
 
 # check if all needed DIR exist
-check_DIR $DIR_BASE
-check_DIR $DIR_SCRIPT
-check_DIR $DIR_SRCIMG
-check_DIR $DIR_WATERMARK_IMAGES
+check_DIR "$DIR_BASE"
+check_DIR "$DIR_SCRIPT"
+check_DIR "$DIR_SRCIMG"
+check_DIR "$DIR_WATERMARK_IMAGES"
 
 #DIR_BASE=`realpath $1`  # works
 ## SE
@@ -118,29 +114,29 @@ DIR_WATERMARK=$DIR_BASE"/urlaub"
 DIR_WATERMARK_2k=$DIR_WATERMARK"-"$r2k"px"
 DIR_WATERMARK_4k=$DIR_WATERMARK"-"$r4k"px"
 DIR_WATERMARK_6k=$DIR_WATERMARK"-"$r6k"px"
-check_and_create_DIR $DIR_WATERMARK_2k
-check_and_create_DIR $DIR_WATERMARK_4k
-check_and_create_DIR $DIR_WATERMARK_6k
-check_files_existance $WATERMARK_SE_S
-check_files_existance $WATERMARK_SE_M
-check_files_existance $WATERMARK_SE_L
-check_files_existance $WATERMARK_SW_S
-check_files_existance $WATERMARK_SW_M
-check_files_existance $WATERMARK_SW_L
+check_and_create_DIR  "$DIR_WATERMARK_2k"
+check_and_create_DIR  "$DIR_WATERMARK_4k"
+check_and_create_DIR  "$DIR_WATERMARK_6k"
+check_files_existance "$WATERMARK_SE_S"
+check_files_existance "$WATERMARK_SE_M"
+check_files_existance "$WATERMARK_SE_L"
+check_files_existance "$WATERMARK_SW_S"
+check_files_existance "$WATERMARK_SW_M"
+check_files_existance "$WATERMARK_SW_L"
 
-cd $DIR_BASE
+cd "$DIR_BASE" || exit 1
 
 # Watermark images
 before=$(date +%s) # get timing
 COUNTER=1
-cd $DIR_SRCIMG
+cd "$DIR_SRCIMG" || exit 1
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   FN_CUT="${FN%.*}"
   FQFN_6k=$DIR_WATERMARK_6k/$FN"-"$r6k"px.jpg"
   FQFN_4k=$DIR_WATERMARK_4k/$FN"-"$r4k"px.jpg"
   FQFN_2k=$DIR_WATERMARK_2k/$FN"-"$r2k"px.jpg"
   echo "$COUNTER PROCESSING: >$FN<"
-  let "COUNTER=COUNTER+1"
+  (( COUNTER++ ))
   echo "$FN_CUT"
   echo "$FQFN_6k"
   if [ -f "$FQFN_6k" ]; then     # if file already exist -> skip it
@@ -157,8 +153,8 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # get width of image
   WIDTH=$(identify -ping -format '%w' "$FN")
   OFFSET_WATERMARK_X=$(($WIDTH / 50))
-  WATERMARK_SW_WIDTH=$(($WIDTH / 4))
-  WATERMARK_SE_WIDTH=$(($WIDTH / 5))
+  #WATERMARK_SW_WIDTH=$(($WIDTH / 4))
+  #WATERMARK_SE_WIDTH=$(($WIDTH / 5))
   OFFSET_WATERMARK_Y=100
   LABELLING_SIZE=$(($WIDTH / 60))
   echo "WIDTH: $WIDTH"
@@ -168,15 +164,15 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   WATERMARK_SW=$WATERMARK_SW_L
   WATERMARK_SE=$WATERMARK_SE_L
 
-  if [ $WIDTH -ge $r6k ]; then
+  if [ "$WIDTH" -ge "$r6k" ]; then
     echo "using L watermark"
     WATERMARK_SW=$WATERMARK_SW_L
     WATERMARK_SE=$WATERMARK_SE_L
-  elif [ $WIDTH -ge $r4k ]; then
+  elif [ "$WIDTH" -ge "$r4k" ]; then
     echo "using M watermark"
     WATERMARK_SW=$WATERMARK_SW_M
     WATERMARK_SE=$WATERMARK_SE_M
-  elif [ $WIDTH -ge $r2k ]; then
+  elif [ "$WIDTH" -ge "$r2k" ]; then
     echo "using S watermark"
     WATERMARK_SW=$WATERMARK_SW_S
     WATERMARK_SE=$WATERMARK_SE_S
@@ -209,22 +205,21 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     echo "TEXTFILE found: >$FN_TXT<"
     FILENAME="$DIR_SRCIMG/$FN_TXT"
     LINE_COUNTER=1
-    CAPTION=""
     TEXTCOLOR="#808080"
     LABELLING_TEXT=""
     IFS=$'\n'
-    for LINE in $(cat $FILENAME); do
+    for LINE in $(cat "$FILENAME"); do
       if [[ $LINE_COUNTER = "1" ]]; then
-        CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $(($LABELLING_SIZE * 2)) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$FQFN_6k\" \"$FQFN_6k\""
-        eval $CMD
+        CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $((LABELLING_SIZE * 2)) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$FQFN_6k\" \"$FQFN_6k\""
+        eval "$CMD"
       else
         LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
       fi
       #        echo "$LINE read from $FILENAME"
-      ((LINE_COUNTER = LINE_COUNTER + 1))
+      (( LINE_COUNTER++ ))
     done
     CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) \"${LABELLING_TEXT}\" \"$FQFN_6k\" \"$FQFN_6k\""
-    eval $CMD
+    eval "$CMD"
   else
     echo "TEXTFILE NOT found: >$FN_TXT<"
   fi
@@ -245,9 +240,9 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
 done
 
 after=$(date +%s)
-runtime=$((after - $before))
+runtime=$(( after - before ))
 RT="elapsed time: $runtime seconds"
-echo $RT
-echo $RT >script_execution_time.txt
+echo "$RT"
+echo "$RT" >script_execution_time.txt
 
 exit

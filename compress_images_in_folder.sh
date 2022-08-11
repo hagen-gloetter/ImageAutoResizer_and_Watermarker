@@ -4,7 +4,7 @@ _self="${0##*/}"
 echo "$_self is called"
 
 if [[ $# -eq 0 ]]; then
-    echo "Usage: $(basename $0) [foldername]"
+    echo "Usage: $(basename "$0") [foldername]"
     exit 1
 fi
 DIR_SRCIMG="$1"
@@ -36,7 +36,7 @@ function check_and_create_DIR {
     if [ -d "$DIR" ]; then
         echo "${DIR} exists -> OK"
     else
-        mkdir $DIR
+        mkdir "$DIR"
         echo "Error: ${DIR} not found. Creating."
     fi
     # check if it worked
@@ -64,9 +64,9 @@ function make_guetzli {
             echo "Processing: $FN_IN"
             CMD="$GUETZLI --quality $QUALITYGZLY \"$FN_IN\" \"$FN_OUT\"  "
             gzbefore=$(date +%s) # get timing
-            eval $CMD
+            eval "$CMD"
             gzafter=$(date +%s)
-            gzruntime=$(($gzafter - $gzbefore))
+            gzruntime=$(( gzafter - gzbefore))
             echo "compression time: $gzruntime seconds"
         else
             echo "SKIP: File exists >$FN_OUT<"
@@ -78,9 +78,9 @@ function make_guetzli {
     fi
 }
 
-check_DIR $DIR_SRCIMG
-cd $DIR_SRCIMG
-check_and_create_DIR $DIR_WEB
+check_DIR "$DIR_SRCIMG"
+cd "$DIR_SRCIMG" || exit 1
+check_and_create_DIR "$DIR_WEB"
 N=4
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     #for $FN in $FILELIST ; do
