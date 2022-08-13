@@ -186,8 +186,8 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   #  echo "Adding Watermark SouthWest"
   CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SE\"  \) \"$DIR_SRCIMG/$FN\" \"$FQFN_6k\" "
   echo "Adding Watermark SouthEast"
-  echo "CMD: $CMD"
-  eval $CMD
+#  echo "CMD: $CMD"
+  eval "$CMD"
   #echo "DEBUG:>$FQFN_6k<"
   # set gloetter watermark only if filename containd "HG"
   #case "$FN" in *HG*)
