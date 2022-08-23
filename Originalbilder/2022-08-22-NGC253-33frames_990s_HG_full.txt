@@ -1,0 +1,9 @@
+NGC 253 - Sculptor-Galaxie
+Datum: 22.08.2022
+Sternbild: Bildhauer
+Magnitude: 8.0
+Entfernung: 11.4 Mio. Lj
+Durchmesser: 90.000 Lj
+Instrument: 5″ Starfire Refraktor
+Belichtungszeit: 1260s
+Aufnahmen: 33

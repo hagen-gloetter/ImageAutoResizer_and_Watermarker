@@ -130,7 +130,7 @@ cd "$DIR_BASE" || exit 1
 before=$(date +%s) # get timing
 COUNTER=1
 cd "$DIR_SRCIMG" || exit 1
-for FN in *.jpg *.jpeg *.JPG *.JPEG; do
+for FN in *.jpg *.jpeg *.JPG *.JPEG *.HEIC *.heic; do
   FN_CUT="${FN%.*}"
   FQFN_6k=$DIR_WATERMARK_6k/$FN"-"$r6k"px.jpg"
   FQFN_4k=$DIR_WATERMARK_4k/$FN"-"$r4k"px.jpg"
