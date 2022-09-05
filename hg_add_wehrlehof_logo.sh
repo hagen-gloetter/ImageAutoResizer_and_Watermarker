@@ -110,7 +110,7 @@ WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"
 echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images
-DIR_WATERMARK=$DIR_SRCIMG"/watermarked"
+DIR_WATERMARK=$DIR_SRCIMG"/wehrlehof"
 DIR_WATERMARK_2k=$DIR_WATERMARK"-"$r2k"px"
 DIR_WATERMARK_4k=$DIR_WATERMARK"-"$r4k"px"
 DIR_WATERMARK_6k=$DIR_WATERMARK"-"$r6k"px"
