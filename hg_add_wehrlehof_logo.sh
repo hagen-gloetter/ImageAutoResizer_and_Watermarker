@@ -102,11 +102,11 @@ echo "WATERMARK_SE_M = $WATERMARK_SE_M"
 WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/Wehrlehof_Logo2.png"
 echo "WATERMARK_SE_S = $WATERMARK_SE_S"
 ## SW
-WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png"
+WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1600px.png"
 echo "WATERMARK_SW_L = $WATERMARK_SW_L"
-WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1680x580px.png"
+WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png"
 echo "WATERMARK_SW_M = $WATERMARK_SW_M"
-WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"
+WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"
 echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images
@@ -189,15 +189,15 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG *.HEIC *.heic; do
     #  echo "CMD: $CMD"
     eval "$CMD"
     #echo "DEBUG:>$FQFN_6k<"
-    # set gloetter watermark only if filename containd "HG"
-    #case "$FN" in *HG*)
-    #  echo "HG found in filename $FN"
-    #
-    #    echo "CMD: $CMD"
-    #   eval $CMD
-    #   ;;
-    # *) ;;
-    # esac
+    case "$FN" in *HG*)
+        echo "HG found in filename $FN"
+        CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SW\"  \) \"$FQFN_6k\" \"$FQFN_6k\" "
+        echo "Adding Watermark SouthEast"
+        #    echo "CMD: $CMD"
+        eval "$CMD"
+        ;;
+    *) ;;
+    esac
     echo "Text Imprint"
     FN_CUT="${FN%.*}"
     FN_TXT=$FN_CUT".txt"

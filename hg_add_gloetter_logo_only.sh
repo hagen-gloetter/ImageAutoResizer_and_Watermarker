@@ -110,7 +110,7 @@ WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"
 echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images
-DIR_WATERMARK=$DIR_BASE"/urlaub"
+DIR_WATERMARK=$DIR_SRCIMG"/gloetter"
 DIR_WATERMARK_2k=$DIR_WATERMARK"-"$r2k"px"
 DIR_WATERMARK_4k=$DIR_WATERMARK"-"$r4k"px"
 DIR_WATERMARK_6k=$DIR_WATERMARK"-"$r6k"px"
