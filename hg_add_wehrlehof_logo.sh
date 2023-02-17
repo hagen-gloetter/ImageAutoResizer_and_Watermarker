@@ -103,10 +103,12 @@ WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/Wehrlehof_Logo2.png"
 echo "WATERMARK_SE_S = $WATERMARK_SE_S"
 ## SW
 WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1600px.png"
+WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" # fix cause wehrlehos has just one size
 echo "WATERMARK_SW_L = $WATERMARK_SW_L"
 WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png"
 echo "WATERMARK_SW_M = $WATERMARK_SW_M"
 WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"
+WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" # fix cause wehrlehos has just one size
 echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images

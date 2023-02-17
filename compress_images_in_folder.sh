@@ -37,7 +37,7 @@ function check_and_create_DIR {
         echo "${DIR} exists -> OK"
     else
         mkdir "$DIR"
-        echo "Error: ${DIR} not found. Creating."
+        echo "Info: ${DIR} not found. Creating."
     fi
     # check if it worked
     if [ ! -d "$DIR" ]; then
