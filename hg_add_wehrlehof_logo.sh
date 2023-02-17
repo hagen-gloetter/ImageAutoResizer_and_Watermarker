@@ -12,8 +12,8 @@ _self="${0##*/}"
 echo "$_self is called"
 
 if [[ $# -eq 0 ]]; then
-    echo "Usage: $(basename "$0") [Picture-Foldername]"
-    exit 1
+  echo "Usage: $(basename "$0") [Picture-Foldername]"
+  exit 1
 fi
 
 shopt -s nullglob
@@ -21,15 +21,15 @@ shopt -s nullglob
 COMPOSITE=$(which composite) # path to imagemagick compose
 CONVERT=$(which convert)
 QUALITYJPG="85"
-UBUNTU=$(cat /etc/issue | grep -i "ubuntu")
+UBUNTU=$(grep -i "ubuntu" </etc/issue)
 if [ $? -eq 0 ]; then
-    echo "$UBUNTU detected"
-    DIR_SCRIPT=$(dirname "$(readlink -f "$0")")
-    DIR_SRCIMG=$(readlink -f "$1") # works on all *nix systems to make path absolute
+  echo "$UBUNTU detected"
+  DIR_SCRIPT=$(dirname "$(readlink -f "$0")")
+  DIR_SRCIMG=$(readlink -f "$1") # works on all *nix systems to make path absolute
 else
-    echo "MacOS detected"
-    DIR_SCRIPT=$(dirname "$(greadlink -f "$0")")
-    DIR_SRCIMG=$(greadlink -f "$1") # works on all *nix systems to make path absolute
+  echo "MacOS detected"
+  DIR_SCRIPT=$(dirname "$(greadlink -f "$0")")
+  DIR_SRCIMG=$(greadlink -f "$1") # works on all *nix systems to make path absolute
 fi
 DIR_BASE=$(pwd) # does sometimes not work :-(
 DIR_WATERMARK_IMAGES="$DIR_SCRIPT/watermark-images"

@@ -12,7 +12,7 @@ _self="${0##*/}"
 echo "$_self is called"
 
 if [[ $# -eq 0 ]]; then
-  echo "Usage: $(basename "$0") [foldername]"
+  echo "Usage: $(basename "$0") [Picture-Foldername]"
   exit 1
 fi
 
@@ -110,7 +110,7 @@ WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/Sternwarte-Wasserzeichen_1000x290px.png"
 echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images
-DIR_WATERMARK=$DIR_BASE"/watermarked"
+DIR_WATERMARK=$DIR_SRCIMG"/watermarked"
 DIR_WATERMARK_2k=$DIR_WATERMARK"-"$r2k"px"
 DIR_WATERMARK_4k=$DIR_WATERMARK"-"$r4k"px"
 DIR_WATERMARK_6k=$DIR_WATERMARK"-"$r6k"px"
@@ -124,17 +124,21 @@ check_files_existance "$WATERMARK_SW_S"
 check_files_existance "$WATERMARK_SW_M"
 check_files_existance "$WATERMARK_SW_L"
 
+cd "$DIR_BASE" || exit 1
+
 # Watermark images
 before=$(date +%s) # get timing
 COUNTER=1
 cd "$DIR_SRCIMG" || exit 1
-for FN in *.jpg *.jpeg *.JPG *.JPEG; do
+for FN in *.jpg *.jpeg *.JPG *.JPEG *.HEIC *.heic *.png *.PNG; do
   FN_CUT="${FN%.*}"
   FQFN_6k=$DIR_WATERMARK_6k/$FN"-"$r6k"px.jpg"
   FQFN_4k=$DIR_WATERMARK_4k/$FN"-"$r4k"px.jpg"
   FQFN_2k=$DIR_WATERMARK_2k/$FN"-"$r2k"px.jpg"
   echo "$COUNTER PROCESSING: >$FN<"
   ((COUNTER++))
+  echo "$FN_CUT"
+  echo "$FQFN_6k"
   if [ -f "$FQFN_6k" ]; then     # if file already exist -> skip it
     if [ -f "$FQFN_4k" ]; then   # if file already exist -> skip it
       if [ -f "$FQFN_2k" ]; then # if file already exist -> skip it
@@ -148,11 +152,11 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
   # get width of image
   WIDTH=$(identify -ping -format '%w' "$FN")
-  OFFSET_WATERMARK_X=$((WIDTH / 50))
-  #  WATERMARK_SW_WIDTH=$(( WIDTH / 4 ))
-  #  WATERMARK_SE_WIDTH=$(( WIDTH / 5 ))
+  OFFSET_WATERMARK_X=$(($WIDTH / 50))
+  #WATERMARK_SW_WIDTH=$(($WIDTH / 4))
+  #WATERMARK_SE_WIDTH=$(($WIDTH / 5))
   OFFSET_WATERMARK_Y=100
-  LABELLING_SIZE=$((WIDTH / 60))
+  LABELLING_SIZE=$(($WIDTH / 60))
   echo "WIDTH: $WIDTH"
   #echo "OFFSET_WATERMARK_X: $OFFSET_WATERMARK_X"
   #echo "WATERMARK_SW_WIDTH: $WATERMARK_SW_WIDTH"
@@ -182,6 +186,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   echo "Adding Watermark SouthWest"
   #echo "CMD: $CMD"
   eval "$CMD"
+  #echo "DEBUG:>$FQFN_6k<"
   # set gloetter watermark only if filename containd "HG"
   case "$FN" in *HG*)
     echo "HG found in filename $FN"
@@ -228,7 +233,8 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
   echo "2k resizing"
   #echo "  - >$FN< -- CMD: $CMD\n"
   eval "$CMD &"
-  #  use guetzli compression for jpgs for smaller filesizes -->  moved to external code ;-)
+  #  use guetzli compression for jpgs for smaller filesizes
+  # moved to external code ;-)
 
 done
 

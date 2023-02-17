@@ -21,7 +21,7 @@ shopt -s nullglob
 COMPOSITE=$(which composite) # path to imagemagick compose
 CONVERT=$(which convert)
 QUALITYJPG="85"
-UBUNTU=$(cat /etc/issue | grep -i "ubuntu")
+UBUNTU=$(grep -i "ubuntu" </etc/issue)
 if [ $? -eq 0 ]; then
   echo "$UBUNTU detected"
   DIR_SCRIPT=$(dirname "$(readlink -f "$0")")
@@ -130,7 +130,7 @@ cd "$DIR_BASE" || exit 1
 before=$(date +%s) # get timing
 COUNTER=1
 cd "$DIR_SRCIMG" || exit 1
-for FN in *.jpg *.jpeg *.JPG *.JPEG *.HEIC *.heic; do
+for FN in *.jpg *.jpeg *.JPG *.JPEG *.HEIC *.heic *.png *.PNG; do
   FN_CUT="${FN%.*}"
   FQFN_6k=$DIR_WATERMARK_6k/$FN"-"$r6k"px.jpg"
   FQFN_4k=$DIR_WATERMARK_4k/$FN"-"$r4k"px.jpg"
