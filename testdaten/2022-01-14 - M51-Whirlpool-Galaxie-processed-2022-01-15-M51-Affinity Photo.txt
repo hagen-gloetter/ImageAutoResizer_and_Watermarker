@@ -1,0 +1,9 @@
+M51 Whirlpool-Galaxie
+Datum: 14.01.2022
+Sternbild: Jagdhunde
+Magnitude: 8.0
+Entfernung: 30 Mio. Lj
+Durchmesser: 100.000 Lj
+Instrument: 5'' Starfire Refraktor
+Belichtungszeit: 3000s
+Aufnahmen: 100
