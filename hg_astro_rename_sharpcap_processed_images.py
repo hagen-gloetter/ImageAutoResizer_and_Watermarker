@@ -1,4 +1,5 @@
 # hagen@gloetter.de 12.2023 
+# source: https://github.com/hagen-gloetter/ImageAutoResizer_and_Watermarker
 # Astro Pictures taken with our Astro Camera ASI ZWO 2600MC-P and SharpCap 
 # are always stored in a "processed" folder. Moving them out 
 # and renaming them was always a boring manual process.
