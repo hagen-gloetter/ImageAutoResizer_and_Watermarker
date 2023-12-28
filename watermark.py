@@ -39,8 +39,8 @@ def process_image(image_path, text_path, watermark_path):
 
 if __name__ == '__main__':
     # Setzt den Pfad zum Ordner der Bilder, Text- und Wasserzeichen-Datei
-    images_folder_path = 'Bilder'
-    watermark_path = 'wasserzeichen.png'
+    images_folder_path = 'testdaten/'
+    watermark_path = 'watermark-images/gloetter_de_wasserzeichen_500px.png'
 
     # Durchsucht alle Bilder im Ordner und verarbeitet sie
     for file_name in os.listdir(images_folder_path):
