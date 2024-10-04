@@ -178,7 +178,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG *.HEIC *.heic *.png *.PNG; do
     WATERMARK_SE=$WATERMARK_SE_S
   fi
   # composite -gravity SouthEast gloetter_de_wasserzeichen_1100px.png IMG_6269.JPG Test2.jpg
-  TRANSPARENZ="-dissolve 50%"
+  TRANSPARENZ="-dissolve 25%"
   TRANSPARENZ=""
 
   # OFFSET_WATERMARK_X=0 # debug
