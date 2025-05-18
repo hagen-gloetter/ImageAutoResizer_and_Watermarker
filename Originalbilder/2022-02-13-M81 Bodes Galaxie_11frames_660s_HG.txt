@@ -1,9 +1,0 @@
-M81 Bodes Galaxie
-Datum: 13.02.2022
-Sternbild: Großer Wagen
-Magnitude: 8.5
-Entfernung: 12 Mio Lj
-Durchmesser: 70.000 Lj
-Instrument: 16″ Ritchey-Chrétien
-Belichtungszeit: 660s
-Aufnahmen: 11

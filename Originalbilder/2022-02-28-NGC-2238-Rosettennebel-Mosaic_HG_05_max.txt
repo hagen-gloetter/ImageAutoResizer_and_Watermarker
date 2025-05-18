@@ -1,9 +1,0 @@
-NGC 2244 Rosettennebel
-Datum: 28.02.2022 
-Sternbild: Einhorn
-Magnitude: 6.0
-Entfernung: 5.219 Lj
-Durchmesser: 130 Lj
-Instrument: 5″ Starfire Refraktor
-Belichtungszeit: 930s
-Aufnahmen: 31

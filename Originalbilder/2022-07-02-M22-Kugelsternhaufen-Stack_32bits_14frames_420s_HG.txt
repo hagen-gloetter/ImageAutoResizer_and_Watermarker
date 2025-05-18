@@ -1,9 +1,0 @@
-M22 Kugelsternhaufen
-Datum: 02.07.2022
-Sternbild: Schütze
-Magnitude: 6.5
-Entfernung: 10.000 Lj
-Durchmesser: 100 Lj
-Instrument: 5″ Starfire Refraktor
-Belichtungszeit: 420s
-Aufnahmen: 14

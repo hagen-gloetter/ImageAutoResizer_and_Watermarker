@@ -1,9 +1,0 @@
-M33 Triangulum Galaxy
-Datum: 14.11.2020
-Sternbild: Dreieck
-Magnitude: 7.0
-Entfernung: 2.723.000 Lj
-Durchmesser: 60.000 Lj
-Instrument: 5″ Starfire Refraktor
-Belichtungszeit: 1620s
-Aufnahmen: 36
