@@ -209,18 +209,20 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG *.HEIC *.heic *.png *.PNG; do
     IFS=$'\n'
     for LINE in $(cat "$FILENAME"); do
       if [[ $LINE_COUNTER = "1" ]]; then
-        CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $((LABELLING_SIZE * 2)) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$FQFN_6k\" \"$FQFN_6k\""
-        eval "$CMD"
+#        CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $((LABELLING_SIZE * 2)) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$FQFN_6k\" \"$FQFN_6k\""
+         $CONVERT -font helvetica -fill "$TEXTCOLOR" -pointsize $((LABELLING_SIZE * 2)) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" "${LINE}" "$FQFN_6k" "$FQFN_6k"
+#        eval "$CMD"
       else
         LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
       fi
       #        echo "$LINE read from $FILENAME"
       ((LINE_COUNTER++))
     done
-    CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) \"${LABELLING_TEXT}\" \"$FQFN_6k\" \"$FQFN_6k\""
-    echo "DEBUG: $LABELLING_TEXT"
-    echo $CMD
-    eval $CMD
+#    CMD="$CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) \"${LABELLING_TEXT}\" \"$FQFN_6k\" \"$FQFN_6k\""
+    $CONVERT -font helvetica -fill "$TEXTCOLOR" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) "${LABELLING_TEXT}" "$FQFN_6k" "$FQFN_6k"
+    #echo "DEBUG: $LABELLING_TEXT"
+    #echo $CMD
+    #eval $CMD
   else
     echo "TEXTFILE NOT found: >$FN_TXT<"
   fi
