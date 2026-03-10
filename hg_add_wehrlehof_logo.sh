@@ -21,7 +21,7 @@ shopt -s nullglob
 COMPOSITE=$(which composite) # path to imagemagick compose
 CONVERT=$(which convert)
 QUALITYJPG="85"
-UBUNTU=$(grep -i "ubuntu" </etc/issue)
+UBUNTU=$(grep -i "ubuntu" /etc/issue 2>/dev/null)
 if [ $? -eq 0 ]; then
     echo "$UBUNTU detected"
     DIR_SCRIPT=$(dirname "$(readlink -f "$0")")
@@ -79,6 +79,8 @@ function check_files_existance {
 }
 
 function get_filename_without_extension {
+    # NOTE: Diese Funktion ist derzeit ungenutzt. Bash 'return' akzeptiert nur
+    # Ganzzahlen (0-255) — Strings können nicht zurückgegeben werden.
     filename=$1
     FN_CUT="${filename%.*}"
     #  filename=$(basename -- "$1")
@@ -102,13 +104,11 @@ echo "WATERMARK_SE_M = $WATERMARK_SE_M"
 WATERMARK_SE_S="$DIR_WATERMARK_IMAGES/Wehrlehof_Logo2.png"
 echo "WATERMARK_SE_S = $WATERMARK_SE_S"
 ## SW
-WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1600px.png"
-WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" # fix cause wehrlehos has just one size
+WATERMARK_SW_L="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" # fix: wehrlehof has just one size
 echo "WATERMARK_SW_L = $WATERMARK_SW_L"
 WATERMARK_SW_M="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png"
 echo "WATERMARK_SW_M = $WATERMARK_SW_M"
-WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_500px.png"
-WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" # fix cause wehrlehos has just one size
+WATERMARK_SW_S="$DIR_WATERMARK_IMAGES/gloetter_de_wasserzeichen_1100px.png" # fix: wehrlehof has just one size
 echo "WATERMARK_SW_S = $WATERMARK_SW_S"
 
 # create subfolders for images

@@ -1,10 +1,19 @@
+"""latex.py — Textdateien in LaTeX-Rahmen (framebox) konvertieren.
 
+Liest alle .txt-Dateien im konfigurierten Ordner und schreibt je eine
+.tex-Datei mit LaTeX-Rahmenerstellung (8x8 cm, Überschrift + Body).
+
+Hinweis: Pfad ist aktuell auf ein Windows-Verzeichnis gesetzt (nur lokal).
+Für CLI-Nutzung: sys.argv[1]-Zeile einkommentieren und Pfad entfernen.
+
+Exit-Codes: 0 = OK; !=0 = IOError / OSError
+"""
 import os
 import sys
 
 # Ordnerpfad, in dem die Textdateien gespeichert sind
 #folder_path = sys.argv[1]
-folder_path ="F:\nextcloud\sternwarte\Astrofotografie\_2022-alle-Astrobilder\BestOf2022\"
+folder_path = "F:\\nextcloud\\sternwarte\\Astrofotografie\\_2022-alle-Astrobilder\\BestOf2022\\"
 
 # Durchsuchen Sie den Ordner nach Textdateien
 for filename in os.listdir(folder_path):

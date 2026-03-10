@@ -1,18 +1,21 @@
-# hagen@gloetter.de 12.2023 
+# hagen@gloetter.de 12.2023
 # source: https://github.com/hagen-gloetter/ImageAutoResizer_and_Watermarker
-# Astro Pictures taken with our Astro Camera ASI ZWO 2600MC-P and SharpCap 
-# are always stored in a "processed" folder. Moving them out 
+# Astro Pictures taken with our Astro Camera ASI ZWO 2600MC-P and SharpCap
+# are always stored in a "processed" folder. Moving them out
 # and renaming them was always a boring manual process.
 # Warning: this script is destructive and there is no undo - so try it on a copy first!
 # What is does (destructive):
-# 1: renames the images and text files with the name of the parent folder 
+# 1: renames the images and text files with the name of the parent folder
 # 2: moves the images and text files out of the "processed" folder
-# 
+#
 # needed folder structure:
 # 2023-12-18-M42-Orion/processed/Stack_29frames_870s.png
 # result:
 # 2023-12-18-M42-Orion/2023-12-18-M42-Orion-Stack_29frames_870s.png
-
+#
+# Usage:  python hg_astro_rename_sharpcap_processed_images.py
+# Exit-Codes: 0 = OK; !=0 = Exception beim Umbenennen/Verschieben
+"""Astro-Bilder aus SharpCap 'processed'-Unterordnern umbenennen und verschieben."""
 import os
 import shutil
 
@@ -36,21 +39,16 @@ def rename_and_move_files(root_folder):
 
                     print(f"=========================== ")
                     print(f"folder_name: {folder_name} ")
-                    print(f"folder_name: {folder_name} ")
                     print(f"src: {src} ")
                     print(f"dst {dst}")
                     print(f"target: {target} ")
                     try:
                         os.rename(src, dst)
                         shutil.move(dst, target)
-                    except:
-                        print(f"Error target exists: {target} ")
+                    except Exception as e:
+                        print(f"Error moving {dst} -> {target}: {e}")
 
 if __name__ == "__main__":
     rename_and_move_files(root_folder_path)
-
-import os
-
-root_folder_path = "."  # Setze hier den Pfad zum Basisordner ein
 
 

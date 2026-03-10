@@ -21,7 +21,7 @@ shopt -s nullglob
 COMPOSITE=$(which composite) # path to imagemagick compose
 CONVERT=$(which convert)
 QUALITYJPG="85"
-UBUNTU=$(cat /etc/issue | grep -i "ubuntu")
+UBUNTU=$(grep -i "ubuntu" /etc/issue 2>/dev/null)
 if [ $? -eq 0 ]; then
   echo "$UBUNTU detected"
   DIR_SCRIPT=$(dirname "$(readlink -f "$0")")
@@ -79,6 +79,8 @@ function check_files_existance {
 }
 
 function get_filename_without_extension {
+  # NOTE: Diese Funktion ist derzeit ungenutzt. Bash 'return' akzeptiert nur
+  # Ganzzahlen (0-255) — Strings können nicht zurückgegeben werden.
   filename=$1
   FN_CUT="${filename%.*}"
   #  filename=$(basename -- "$1")

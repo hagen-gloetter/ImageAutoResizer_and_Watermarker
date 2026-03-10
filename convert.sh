@@ -1,4 +1,4 @@
-
+#!/bin/bash
 # 08.2020
 # hagen.gloetter@gamil.com
 # convert a movie file to 720p to save HD space

@@ -1,4 +1,11 @@
 #! /bin/bash
+# compress_images_in_folder.sh
+# Komprimiert alle JPEG-Bilder eines Ordners mit guetzli (parallelisiert, N=4).
+#
+# Usage: compress_images_in_folder.sh <Bildordner>
+# Dependencies: guetzli (brew install guetzli)
+# Output: <Bildordner>/web/<Dateiname>_web.jpg
+# Exit-Codes: 0 = OK; 1 = guetzli fehlt / Ordner nicht gefunden
 shopt -s nullglob
 _self="${0##*/}"
 echo "$_self is called"
@@ -47,18 +54,18 @@ function check_and_create_DIR {
 }
 function make_guetzli {
     FN_IN="$1"
-    FN_OUT="$DIR_WEB/${FN%.*}_web.jpg" # add _web to filename
+    FN_OUT="$DIR_WEB/${FN_IN%.*}_web.jpg" # add _web to filename
     # echo "FN_IN =>$FN_IN<"
     # echo "FN_OUT=>$FN_OUT<"
     if [ -f "$FN_IN" ]; then
         case "$FN_IN" in *_web*) # not double compress
             echo "_web found in filename "
-            continue
+            return
             ;;
         esac
         if [ -f "$FN_OUT" ]; then
             echo "SKIP: Output exists: $FN_OUT"
-            continue
+            return
         fi
         if [ ! -f "$FN_OUT" ]; then
             echo "Processing: $FN_IN"
@@ -73,7 +80,7 @@ function make_guetzli {
         fi
 
     else
-        echo "Error: $FN NOT FOUND --> EXIT."
+        echo "Error: $FN_IN NOT FOUND --> EXIT."
         exit 1
     fi
 }
@@ -82,6 +89,7 @@ check_DIR "$DIR_SRCIMG"
 cd "$DIR_SRCIMG" || exit 1
 check_and_create_DIR "$DIR_WEB"
 N=4
+i=0
 for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     #for $FN in $FILELIST ; do
     ((i = i % N))
