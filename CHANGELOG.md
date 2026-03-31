@@ -4,7 +4,43 @@ All notable changes to this project are documented here.
 
 ---
 
-## [Unreleased] — 2026-03-10
+## [Unreleased] — 2026-04-01
+
+### Added
+
+- `hg_astro_rename_sharpcap_processed_images.py`: CLI-Parameter für Basisordner (`python ... [root]`) ergänzt.
+- `latex.py`: CLI-Parameter für Zielordner (`python latex.py [folder]`) ergänzt.
+- `watermark.py`: optionale CLI-Parameter für Bildordner und Wasserzeichenpfad ergänzt.
+
+### Changed
+
+- `imageAutoResizer_and_Watermarker.sh`: robuste Tool-Auflösung (`command -v`) und plattformunabhängige Pfadauflösung über `greadlink/readlink` vereinheitlicht.
+- `imageAutoResizer_and_Watermarker.sh`: Textdatei-Verarbeitung von `for LINE in $(cat ...)` auf `while IFS= read -r` umgestellt.
+- `compress_images_in_folder.sh`: Kommandobau ohne `eval` (direkter guetzli-Aufruf).
+- `convert.sh`: redundante `mkdir`-Aufrufe entfernt und Verzeichniserzeugung auf `mkdir -p` konsolidiert.
+- `make_cleanup.sh`: optionaler Basisordner als Parameter (`./make_cleanup.sh [dir]`).
+
+### Fixed
+
+- `imageAutoResizer_and_Watermarker.sh`: riskante `eval`-Aufrufe für `composite`/`convert` entfernt.
+- `imageAutoResizer_and_Watermarker.sh`: fehlendes `wait` vor Laufzeitmessung ergänzt, damit Hintergrund-Resizes abgeschlossen sind.
+- `compress_images_in_folder.sh`: fehlendes `wait` am Ende ergänzt, damit alle Hintergrundjobs abgeschlossen sind.
+- `hg_astro_rename_sharpcap_processed_images.py`: fehleranfällige Ordnernamenermittlung über String-Split ersetzt durch robuste Verarbeitung von `*/processed`-Ordnern.
+- `hg_astro_rename_sharpcap_processed_images.py`: Konfliktbehandlung verbessert (`SKIP`, wenn Ziel bereits existiert).
+- `latex.py`: robuster LaTeX-Escape erweitert (u. a. `_`, `{`, `}`, `\\`) und UTF-8-Dateizugriff ergänzt.
+- `watermark.py`: Font-Fallback auf Pillow-Default ergänzt, wenn `arial.ttf` fehlt.
+
+### Removed
+
+- `imageAutoResizer_and_Watermarker.sh`: dynamischer String-Kommandobau (`CMD=...`) für Kernverarbeitung entfernt.
+
+### Breaking Changes
+
+- Keine.
+
+---
+
+## [2026-03-10]
 
 ### Fixed
 

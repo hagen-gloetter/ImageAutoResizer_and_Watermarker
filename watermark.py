@@ -21,6 +21,15 @@ Hinweis: Skript ist CWD-abhängig — aus dem Projektverzeichnis ausführen.
 """
 from PIL import Image, ImageDraw, ImageFont
 import os
+import sys
+
+
+def load_font(size):
+    """Load Arial when available and fall back to Pillow default font."""
+    try:
+        return ImageFont.truetype('arial.ttf', size)
+    except OSError:
+        return ImageFont.load_default()
 
 def add_watermark(image_path, watermark_path):
     """Wasserzeichen-Bild links unten in image_path einbetten und speichern.
@@ -52,7 +61,7 @@ def process_image(image_path, text_path, watermark_path):
     """
     # Prüft, ob die Textdatei existiert und öffnet sie
     if os.path.isfile(text_path):
-        with open(text_path, 'r') as f:
+        with open(text_path, 'r', encoding='utf-8') as f:
             text = f.read()
 
         with Image.open(image_path) as img:
@@ -63,11 +72,11 @@ def process_image(image_path, text_path, watermark_path):
             draw = ImageDraw.Draw(text_img)
 
             # Erste Zeile des Textes mit 36pt Schriftgröße
-            font_title = ImageFont.truetype('arial.ttf', 36)
+            font_title = load_font(36)
             draw.text((0, 0), text.split('\n')[0], font=font_title, fill=(0, 0, 0))
 
             # Rest des Textes mit 12pt größerer Schriftgröße
-            font_body = ImageFont.truetype('arial.ttf', 12)
+            font_body = load_font(12)
             draw.text((0, 40), '\n'.join(text.split('\n')[1:]), font=font_body, fill=(0, 0, 0))
 
             # Fügt das Textbild in das Originalbild ein
@@ -81,8 +90,15 @@ def process_image(image_path, text_path, watermark_path):
 
 if __name__ == '__main__':
     # Setzt den Pfad zum Ordner der Bilder, Text- und Wasserzeichen-Datei
-    images_folder_path = 'testdaten/'
-    watermark_path = 'watermark-images/gloetter_de_wasserzeichen_500px.png'
+    images_folder_path = sys.argv[1] if len(sys.argv) > 1 else 'testdaten/'
+    watermark_path = sys.argv[2] if len(sys.argv) > 2 else 'watermark-images/gloetter_de_wasserzeichen_500px.png'
+
+    if not os.path.isdir(images_folder_path):
+        print(f"Error: image folder not found: {images_folder_path}")
+        raise SystemExit(1)
+    if not os.path.isfile(watermark_path):
+        print(f"Error: watermark image not found: {watermark_path}")
+        raise SystemExit(1)
 
     # Durchsucht alle Bilder im Ordner und verarbeitet sie
     for file_name in os.listdir(images_folder_path):

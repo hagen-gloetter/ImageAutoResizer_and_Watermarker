@@ -1,7 +1,5 @@
 #! /bin/bash
 
-set -o pipefail
-
 # 2022-07 Code by Ramona and Hagen Glötter
 # See www.gloetter.de
 
@@ -20,33 +18,18 @@ fi
 
 shopt -s nullglob
 # use the nullglob option to simply ignore a failed match and not enter the body of the loop.
-COMPOSITE=$(command -v composite) # path to imagemagick compose
-CONVERT=$(command -v convert)
-IDENTIFY=$(command -v identify)
+COMPOSITE=$(which composite) # path to imagemagick compose
+CONVERT=$(which convert)
 QUALITYJPG="85"
-if [[ -z "$COMPOSITE" || -z "$CONVERT" || -z "$IDENTIFY" ]]; then
-  echo "Error: ImageMagick tools 'composite', 'convert' and 'identify' are required." >&2
-  exit 1
-fi
-
-if command -v greadlink >/dev/null 2>&1; then
-  READLINK_BIN=$(command -v greadlink)
-elif command -v readlink >/dev/null 2>&1; then
-  READLINK_BIN=$(command -v readlink)
+UBUNTU=$(grep -i "ubuntu" </etc/issue)
+if [ $? -eq 0 ]; then
+  echo "$UBUNTU detected"
+  DIR_SCRIPT=$(dirname "$(readlink -f "$0")")
+  DIR_SRCIMG=$(readlink -f "$1") # works on all *nix systems to make path absolute
 else
-  echo "Error: readlink/greadlink not found." >&2
-  exit 1
-fi
-
-DIR_SCRIPT=$(dirname "$($READLINK_BIN -f "$0")")
-DIR_SRCIMG=$($READLINK_BIN -f "$1")
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  FONT="/System/Library/Fonts/Supplemental/Arial.ttf"
-else
-  FONT="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-fi
-if [[ ! -f "$FONT" ]]; then
-  FONT="Helvetica"
+  echo "MacOS detected"
+  DIR_SCRIPT=$(dirname "$(greadlink -f "$0")")
+  DIR_SRCIMG=$(greadlink -f "$1") # works on all *nix systems to make path absolute
 fi
 DIR_BASE=$(pwd) # does sometimes not work :-(
 DIR_WATERMARK_IMAGES="$DIR_SCRIPT/watermark-images"
@@ -77,7 +60,7 @@ function check_and_create_DIR {
   if [ -d "$DIR" ]; then
     echo "${DIR} exists -> OK"
   else
-    mkdir -p "$DIR"
+    mkdir "$DIR"
     echo "Error: ${DIR} not found. Creating."
   fi
   # check if it worked
@@ -96,9 +79,6 @@ function check_files_existance {
 }
 
 function get_filename_without_extension {
-  # NOTE: Diese Funktion ist derzeit ungenutzt. Bash 'return' akzeptiert nur
-  # Ganzzahlen (0-255) — Strings können nicht zurückgegeben werden.
-  # Für String-Rückgaben echo + Command-Substitution nutzen.
   filename=$1
   FN_CUT="${filename%.*}"
   #  filename=$(basename -- "$1")
@@ -144,6 +124,12 @@ check_files_existance "$WATERMARK_SW_S"
 check_files_existance "$WATERMARK_SW_M"
 check_files_existance "$WATERMARK_SW_L"
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  FONT="/System/Library/Fonts/Supplemental/Arial.ttf"
+else
+  FONT="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+fi
+
 cd "$DIR_BASE" || exit 1
 
 # Watermark images
@@ -171,7 +157,7 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG *.HEIC *.heic *.png *.PNG; do
   # identify testimg.jpg
   # result testimg.jpg JPEG 6000x3967 6000x3967+0+0 8-bit sRGB 9.14767MiB 0.000u 0:00.000
   # get width of image
-  WIDTH=$($IDENTIFY -ping -format '%w' "$FN")
+  WIDTH=$(identify -ping -format '%w' "$FN")
   OFFSET_WATERMARK_X=$(($WIDTH / 50))
   #WATERMARK_SW_WIDTH=$(($WIDTH / 4))
   #WATERMARK_SE_WIDTH=$(($WIDTH / 5))
@@ -202,14 +188,18 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG *.HEIC *.heic *.png *.PNG; do
   TRANSPARENZ=""
 
   # OFFSET_WATERMARK_X=0 # debug
+  CMD="$COMPOSITE -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SW\"  \) \"$DIR_SRCIMG/$FN\" \"$FQFN_6k\" "
   echo "Adding Watermark SouthWest"
-  "$COMPOSITE" -gravity SouthWest -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" "$WATERMARK_SW" "$DIR_SRCIMG/$FN" "$FQFN_6k"
+  #echo "CMD: $CMD"
+  eval "$CMD"
   #echo "DEBUG:>$FQFN_6k<"
   # set gloetter watermark only if filename containd "HG"
   case "$FN" in *HG*)
     echo "HG found in filename $FN"
+    CMD="$COMPOSITE -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" $TRANSPARENZ \( \"$WATERMARK_SE\"  \) \"$FQFN_6k\" \"$FQFN_6k\" "
     echo "Adding Watermark SouthEast"
-    "$COMPOSITE" -gravity SouthEast -geometry +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" "$WATERMARK_SE" "$FQFN_6k" "$FQFN_6k"
+    #    echo "CMD: $CMD"
+    eval "$CMD"
     ;;
   *) ;;
   esac
@@ -222,35 +212,37 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG *.HEIC *.heic *.png *.PNG; do
     LINE_COUNTER=1
     TEXTCOLOR="#808080"
     LABELLING_TEXT=""
-    while IFS= read -r LINE; do
-      if [[ "$LINE_COUNTER" = "1" ]]; then
-        "$CONVERT" "$FQFN_6k" -font "$FONT" -fill "$TEXTCOLOR" -pointsize $((LABELLING_SIZE * 2)) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" "${LINE}" "$FQFN_6k"
+    IFS=$'\n'
+    for LINE in $(cat "$FILENAME"); do
+      if [[ $LINE_COUNTER = "1" ]]; then
+        $CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $((LABELLING_SIZE * 2)) -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+"$OFFSET_WATERMARK_Y" \"${LINE}\" \"$FQFN_6k\" \"$FQFN_6k\"
       else
         LABELLING_TEXT=$LABELLING_TEXT"$LINE\n"
       fi
       #        echo "$LINE read from $FILENAME"
       ((LINE_COUNTER++))
-    done <"$FILENAME"
-    "$CONVERT" "$FQFN_6k" -font "$FONT" -fill "$TEXTCOLOR" -pointsize "$LABELLING_SIZE" -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) "${LABELLING_TEXT}" "$FQFN_6k"
-    #echo "DEBUG: $LABELLING_TEXT"
-    #echo $CMD
-    #eval $CMD
+    done
+    $CONVERT -font helvetica -fill \"$TEXTCOLOR\" -pointsize $LABELLING_SIZE -gravity NorthWest -annotate +"$OFFSET_WATERMARK_X"+$(($OFFSET_WATERMARK_Y + $(($LABELLING_SIZE * 2)))) \"${LABELLING_TEXT}\" \"$FQFN_6k\" \"$FQFN_6k\"
+#    echo "DEBUG: $LABELLING_TEXT"
+#    echo "$CMD"
   else
     echo "TEXTFILE NOT found: >$FN_TXT<"
   fi
   # convert all sizes here maybe via loop ;-)
   # 4k
+  CMD="$CONVERT \"$FQFN_6k\" -resize $r4k -strip -quality $QUALITYJPG  \"$FQFN_4k\" "
   echo "4k resizing"
-  "$CONVERT" "$FQFN_6k" -resize "$r4k" -strip -quality "$QUALITYJPG" "$FQFN_4k" &
+  #echo "  - >$FN< -- CMD: $CMD\n"
+  eval "$CMD &"
   # 2k
+  CMD="$CONVERT  \"$FQFN_6k\" -resize $r2k -strip -quality $QUALITYJPG  \"$FQFN_2k\""
   echo "2k resizing"
-  "$CONVERT" "$FQFN_6k" -resize "$r2k" -strip -quality "$QUALITYJPG" "$FQFN_2k" &
+  #echo "  - >$FN< -- CMD: $CMD\n"
+  eval "$CMD &"
   #  use guetzli compression for jpgs for smaller filesizes
   # moved to external code ;-)
 
 done
-
-wait
 
 after=$(date +%s)
 runtime=$((after - before))

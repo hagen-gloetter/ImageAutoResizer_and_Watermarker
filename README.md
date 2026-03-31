@@ -71,24 +71,27 @@ Ausgabe in `wehrlehof-*/`.
 
 #### `watermark.py` — Pillow-basiertes Wasserzeichen + Text
 ```bash
-python watermark.py
+python watermark.py [bildordner] [wasserzeichen.png]
 ```
 Verarbeitet Bilder in `testdaten/`, Wasserzeichen aus `watermark-images/`. **CWD-abhängig** — aus Projektverzeichnis ausführen.
 
 #### `hg_astro_rename_sharpcap_processed_images.py` — Astro-Umbenennung
 ```bash
-python hg_astro_rename_sharpcap_processed_images.py
+python hg_astro_rename_sharpcap_processed_images.py [basisordner]
 ```
 **Destruktiv (kein Undo)** — vorher auf einer Kopie testen!  
 Erwartet Ordnerstruktur: `<Datum-Objekt>/processed/Stack_*.png`  
 Ergebnis: `<Datum-Objekt>/<Datum-Objekt>-Stack_*.png`
 
 #### `latex.py` — Text → LaTeX-Rahmen
-Hardcodierter Windows-Pfad (nur lokale Nutzung). Konvertiert `.txt`-Dateien in `.tex`-Rahmen (8x8 cm).
+Konvertiert `.txt`-Dateien eines Ordners in `.tex`-Rahmen (8x8 cm).
+```bash
+python latex.py [ordner]
+```
 
 #### `make_cleanup.sh` — Ausgabeordner leeren
 ```bash
-./make_cleanup.sh
+./make_cleanup.sh [bildordner]
 ```
 Löscht alle `.jpg` in `watermarked-1680px/`, `watermarked-4000px/`, `watermarked-6000px/`.
 
@@ -130,7 +133,8 @@ Keine Secrets oder Passwörter in keinem Skript vorhanden.
 
 - Keine Root-Operationen erforderlich
 - Alle Ausgabedateien erben die Standard-Umask des ausführenden Benutzers
-- `eval` wird für ImageMagick-Befehle verwendet — Dateinamen mit Backticks, `$`-Zeichen o.ä. können zu Shell-Injection führen. Nur vertrauenswürdige Eingabeordner verwenden.
+- `imageAutoResizer_and_Watermarker.sh` und `compress_images_in_folder.sh` nutzen keine `eval`-Aufrufe mehr.
+- Einige Logo-Varianten (`hg_add_*.sh`) nutzen weiterhin `eval` für ImageMagick-Befehle. Daher nur vertrauenswürdige Eingabeordner verwenden.
 
 ---
 
@@ -221,21 +225,27 @@ Output: `<image-folder>/web/<filename>_web.jpg`. Already-compressed files are sk
 
 #### `watermark.py` — Pillow-based watermark + text overlay
 ```bash
-python watermark.py
+python watermark.py [image-folder] [watermark.png]
 ```
 Processes images in `testdaten/`. **CWD-dependent** — run from the project directory.
 
 #### `hg_astro_rename_sharpcap_processed_images.py` — Astro image renaming
 ```bash
-python hg_astro_rename_sharpcap_processed_images.py
+python hg_astro_rename_sharpcap_processed_images.py [base-folder]
 ```
 **Destructive (no undo)** — test on a copy first!  
 Expected structure: `<date-object>/processed/Stack_*.png`  
 Result: `<date-object>/<date-object>-Stack_*.png`
 
+#### `latex.py` — Text to LaTeX framebox
+```bash
+python latex.py [folder]
+```
+Converts all `.txt` files in the folder into `.tex` framebox snippets (8x8 cm).
+
 #### `make_cleanup.sh` — Clear output folders
 ```bash
-./make_cleanup.sh
+./make_cleanup.sh [image-folder]
 ```
 Deletes all `.jpg` files in `watermarked-1680px/`, `watermarked-4000px/`, `watermarked-6000px/`.
 
@@ -268,7 +278,8 @@ No secrets or passwords in any script.
 ### Security / Permissions
 
 - No root operations required
-- `eval` is used for ImageMagick commands — filenames containing backticks, `$`-signs, etc. can cause shell injection. Only use trusted input folders.
+- `imageAutoResizer_and_Watermarker.sh` and `compress_images_in_folder.sh` no longer use `eval` for command execution.
+- Some logo variants (`hg_add_*.sh`) still use `eval` for ImageMagick commands. Only use trusted input folders.
 
 ---
 

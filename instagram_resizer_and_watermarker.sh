@@ -24,28 +24,25 @@ fi
 
 shopt -s nullglob
 # use the nullglob option to simply ignore a failed match and not enter the body of the loop.
-COMPOSITE=$(which composite) # path to imagemagick compose
-CONVERT=$(which convert)
+COMPOSITE=$(command -v composite) # path to imagemagick compose
+CONVERT=$(command -v convert)
 if [[ -z "$CONVERT" ]]; then
   echo "Error: 'convert' (ImageMagick) not found in PATH." >&2
   exit 1
 fi
-IDENTIFY=$(which identify)
+IDENTIFY=$(command -v identify)
 if [[ -z "$IDENTIFY" ]]; then
   echo "Error: 'identify' (ImageMagick) not found in PATH." >&2
   exit 1
 fi
 QUALITYJPG="85"
-UBUNTU=$(grep -i "ubuntu" </etc/issue)
-if [ $? -eq 0 ]; then
-  echo "$UBUNTU detected"
-  DIR_SCRIPT=$(dirname "$(readlink -f "$0")")
-  DIR_SRCIMG=$(readlink -f "$1") # works on all *nix systems to make path absolute
+if command -v greadlink >/dev/null 2>&1; then
+  READLINK_BIN=$(command -v greadlink)
 else
-  echo "MacOS detected"
-  DIR_SCRIPT=$(dirname "$(greadlink -f "$0")")
-  DIR_SRCIMG=$(greadlink -f "$1") # works on all *nix systems to make path absolute
+  READLINK_BIN=$(command -v readlink)
 fi
+DIR_SCRIPT=$(dirname "$($READLINK_BIN -f "$0")")
+DIR_SRCIMG=$($READLINK_BIN -f "$1")
 DIR_BASE=$(pwd) # does sometimes not work :-(
 #DIR_WATERMARK_IMAGES="$DIR_SCRIPT/watermark-images"
 

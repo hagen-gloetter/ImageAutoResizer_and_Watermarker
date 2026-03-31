@@ -7,6 +7,7 @@
 # Output: <Bildordner>/web/<Dateiname>_web.jpg
 # Exit-Codes: 0 = OK; 1 = guetzli fehlt / Ordner nicht gefunden
 shopt -s nullglob
+set -o pipefail
 _self="${0##*/}"
 echo "$_self is called"
 
@@ -18,8 +19,8 @@ DIR_SRCIMG="$1"
 DIR_WEB="web"
 
 QUALITYGZLY=85
-GUETZLI=$(which guetzli)
-if [ $? -eq 0 ]; then
+GUETZLI=$(command -v guetzli)
+if [ -n "$GUETZLI" ]; then
     echo "guetzli Compression found"
 else
     echo "guetzli Compression NOT found"
@@ -43,7 +44,7 @@ function check_and_create_DIR {
     if [ -d "$DIR" ]; then
         echo "${DIR} exists -> OK"
     else
-        mkdir "$DIR"
+        mkdir -p "$DIR"
         echo "Info: ${DIR} not found. Creating."
     fi
     # check if it worked
@@ -69,9 +70,8 @@ function make_guetzli {
         fi
         if [ ! -f "$FN_OUT" ]; then
             echo "Processing: $FN_IN"
-            CMD="$GUETZLI --quality $QUALITYGZLY \"$FN_IN\" \"$FN_OUT\"  "
             gzbefore=$(date +%s) # get timing
-            eval "$CMD"
+            "$GUETZLI" --quality "$QUALITYGZLY" "$FN_IN" "$FN_OUT"
             gzafter=$(date +%s)
             gzruntime=$(( gzafter - gzbefore))
             echo "compression time: $gzruntime seconds"
@@ -98,3 +98,5 @@ for FN in *.jpg *.jpeg *.JPG *.JPEG; do
     ((COUNTER = COUNTER + 1))
     make_guetzli "$FN" &
 done
+
+wait

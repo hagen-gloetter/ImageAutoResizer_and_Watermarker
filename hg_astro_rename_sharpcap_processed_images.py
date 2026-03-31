@@ -16,39 +16,82 @@
 # Usage:  python hg_astro_rename_sharpcap_processed_images.py
 # Exit-Codes: 0 = OK; !=0 = Exception beim Umbenennen/Verschieben
 """Astro-Bilder aus SharpCap 'processed'-Unterordnern umbenennen und verschieben."""
-import os
+from pathlib import Path
+import argparse
 import shutil
-
-root_folder_path = "."  # Setze hier den Pfad zum Basisordner ein
-
-def rename_and_move_files(root_folder):
-    for root, dirs, files in os.walk(root_folder):
-        for filename in files:
-            file=filename
-            folder_names = root.split(os.path.sep)
-            if len(folder_names) > 1:
-                folder_name = folder_names[1]  # Der Name des ersten Unterordners
-#                if filename.startswith("Stack_"):
-#                if file.startswith('Stack_') and (file.endswith('.jpg') or file.endswith('.png') or file.endswith('.txt')):
-                if file.startswith('Stack_') and (file.endswith('.jpg') or file.endswith('.png') or file.endswith('.txt')):
-                    
-                    src = os.path.join(root, filename)
-                    dst = os.path.join(root, f"{folder_name}-{filename}")
-                    target=os.path.join(root_folder, folder_name)
+import sys
 
 
-                    print(f"=========================== ")
-                    print(f"folder_name: {folder_name} ")
-                    print(f"src: {src} ")
-                    print(f"dst {dst}")
-                    print(f"target: {target} ")
-                    try:
-                        os.rename(src, dst)
-                        shutil.move(dst, target)
-                    except Exception as e:
-                        print(f"Error moving {dst} -> {target}: {e}")
+def is_supported_file(name: str) -> bool:
+    """Return True for supported SharpCap output files."""
+    lower = name.lower()
+    return name.startswith("Stack_") and lower.endswith((".jpg", ".png", ".txt"))
+
+
+def rename_and_move_files(root_folder: Path) -> int:
+    """Rename and move files from */processed to their parent folder.
+
+    Args:
+        root_folder: Base folder that contains object folders.
+
+    Returns:
+        Number of successfully moved files.
+    """
+    moved_count = 0
+    for processed_dir in root_folder.rglob("processed"):
+        if not processed_dir.is_dir():
+            continue
+
+        object_dir = processed_dir.parent
+        object_name = object_dir.name
+
+        for src in processed_dir.iterdir():
+            if not src.is_file() or not is_supported_file(src.name):
+                continue
+
+            target_name = f"{object_name}-{src.name}"
+            target_path = object_dir / target_name
+
+            print("===========================")
+            print(f"object_name: {object_name}")
+            print(f"source: {src}")
+            print(f"target: {target_path}")
+
+            if target_path.exists():
+                print(f"SKIP: target already exists: {target_path}")
+                continue
+
+            try:
+                shutil.move(str(src), str(target_path))
+                moved_count += 1
+            except Exception as err:
+                print(f"Error moving {src} -> {target_path}: {err}")
+
+    return moved_count
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Rename and move SharpCap processed files to parent object folders"
+    )
+    parser.add_argument(
+        "root",
+        nargs="?",
+        default=".",
+        help="Base folder that contains object folders (default: current directory)",
+    )
+    return parser.parse_args()
+
 
 if __name__ == "__main__":
-    rename_and_move_files(root_folder_path)
+    args = parse_args()
+    root = Path(args.root).resolve()
+    if not root.is_dir():
+        print(f"Error: directory not found: {root}")
+        sys.exit(1)
+
+    moved = rename_and_move_files(root)
+    print(f"Done. moved_files={moved}")
 
 

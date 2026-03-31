@@ -1,5 +1,8 @@
 #!/bin/bash
 shopt -s nullglob
-rm -f watermarked-1680px/*.jpg
-rm -f watermarked-4000px/*.jpg
-rm -f watermarked-6000px/*.jpg
+
+BASE_DIR="${1:-.}"
+
+rm -f "$BASE_DIR"/watermarked-1680px/*.jpg
+rm -f "$BASE_DIR"/watermarked-4000px/*.jpg
+rm -f "$BASE_DIR"/watermarked-6000px/*.jpg
