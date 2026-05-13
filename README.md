@@ -17,13 +17,13 @@ Die Skripte sind für den lokalen / halbautomatischen Betrieb (Einzel-Batch, kei
 brew install coreutils   # greadlink
 brew install imagemagick # composite, convert, identify
 brew install guetzli     # nur für compress_images_in_folder.sh
-pip install Pillow       # nur für watermark.py
+pip install -r requirements.txt  # Pillow für watermark.py
 ```
 
 **Ubuntu/Debian:**
 ```bash
 sudo apt install imagemagick guetzli
-pip install Pillow
+pip install -r requirements.txt
 ```
 
 **Benötigte Systemschriften** (für `watermark.py`):  
@@ -133,8 +133,8 @@ Keine Secrets oder Passwörter in keinem Skript vorhanden.
 
 - Keine Root-Operationen erforderlich
 - Alle Ausgabedateien erben die Standard-Umask des ausführenden Benutzers
-- `imageAutoResizer_and_Watermarker.sh` und `compress_images_in_folder.sh` nutzen keine `eval`-Aufrufe mehr.
-- Einige Logo-Varianten (`hg_add_*.sh`) nutzen weiterhin `eval` für ImageMagick-Befehle. Daher nur vertrauenswürdige Eingabeordner verwenden.
+- Alle Watermark-Skripte (Haupt- und Logo-Varianten) nutzen keine `eval`-Aufrufe mehr — Befehle werden direkt ausgeführt.
+- Dateinamen mit Sonderzeichen sind nun sicher verarbeitet.
 
 ---
 
@@ -142,16 +142,19 @@ Keine Secrets oder Passwörter in keinem Skript vorhanden.
 
 ```
 imageAutoResizer_and_Watermarker.sh   # Hauptskript
+lib_watermark_common.sh               # Gemeinsame Bibliothek (source)
 hg_add_ehle_logo.sh                   # Ehle-Variante
 hg_add_gloetter_logo_only.sh          # Gloetter-Variante
 hg_add_wehrlehof_logo.sh              # Wehrlehof-Variante
+imageAutoResizer_and_Watermarker2.sh  # IMv7-Variante (magick)
 compress_images_in_folder.sh          # guetzli-Komprimierung
+instagram_resizer_and_watermarker.sh  # Instagram-Formate
 watermark.py                          # Pillow-Wasserzeichen
 hg_astro_rename_sharpcap_processed_images.py  # Astro-Umbenennung
 latex.py                              # Text → LaTeX
 convert.sh                            # Hilfs-Skript: Video → 720p
 make_cleanup.sh                       # Ausgabeordner leeren
-make_watermark_dev2.sh                # Älteres Dev-Skript
+requirements.txt                      # Python-Abhängigkeiten
 watermark-images/                     # Wasserzeichen-PNG-Dateien
 testdaten/                            # Beispiel-/Testbilder
 test/                                 # Quicktest-Snippets
@@ -184,13 +187,13 @@ Scripts are designed for local / semi-automated batch use (single run, not Cron)
 brew install coreutils   # greadlink
 brew install imagemagick # composite, convert, identify
 brew install guetzli     # only for compress_images_in_folder.sh
-pip install Pillow       # only for watermark.py
+pip install -r requirements.txt  # Pillow for watermark.py
 ```
 
 **Ubuntu/Debian:**
 ```bash
 sudo apt install imagemagick guetzli
-pip install Pillow
+pip install -r requirements.txt
 ```
 
 **Required system font** (for `watermark.py`): `arial.ttf` must be on the system font path or in the working directory.
@@ -278,8 +281,8 @@ No secrets or passwords in any script.
 ### Security / Permissions
 
 - No root operations required
-- `imageAutoResizer_and_Watermarker.sh` and `compress_images_in_folder.sh` no longer use `eval` for command execution.
-- Some logo variants (`hg_add_*.sh`) still use `eval` for ImageMagick commands. Only use trusted input folders.
+- All watermark scripts (main and logo variants) no longer use `eval` for command execution — commands are invoked directly.
+- Filenames with special characters are now safely handled.
 
 ---
 

@@ -35,7 +35,7 @@ DIR_SCRIPT=$(dirname "$($READLINK_BIN -f "$0")")
 DIR_SRCIMG=$($READLINK_BIN -f "$1")
 
 DIR_BASE=$(pwd)
-DIR_WATERMARK_IMAGES="$DIR_SCRIPT/watermark-images"
+DIR_WATERMARK_IMAGES="$DIR_SCRIPT/../watermark-images"
 
 r6k=6000
 r4k=4000
@@ -46,7 +46,7 @@ check_DIR() {
 }
 
 check_and_create_DIR() {
-  [ -d "$1" ] || mkdir "$1"
+  [ -d "$1" ] || mkdir -p "$1"
   [ -d "$1" ] || { echo "Cannot create $1"; exit 1; }
 }
 

@@ -65,27 +65,35 @@ def process_image(image_path, text_path, watermark_path):
             text = f.read()
 
         with Image.open(image_path) as img:
+            # Schriftgrößen proportional zur Bildhöhe
+            title_size = max(12, img.height // 30)
+            body_size = max(8, img.height // 80)
+            bar_height = title_size + body_size + 20
+
             # Erstellt eine neue Bilddatei für den Text
-            text_img = Image.new('RGB', (img.width, 60), color = (255, 255, 255))
+            text_img = Image.new('RGB', (img.width, bar_height), color = (255, 255, 255))
 
             # Fügt den Text in das Bild ein
             draw = ImageDraw.Draw(text_img)
 
-            # Erste Zeile des Textes mit 36pt Schriftgröße
-            font_title = load_font(36)
-            draw.text((0, 0), text.split('\n')[0], font=font_title, fill=(0, 0, 0))
+            # Erste Zeile des Textes als Titel
+            font_title = load_font(title_size)
+            draw.text((10, 5), text.split('\n')[0], font=font_title, fill=(0, 0, 0))
 
-            # Rest des Textes mit 12pt größerer Schriftgröße
-            font_body = load_font(12)
-            draw.text((0, 40), '\n'.join(text.split('\n')[1:]), font=font_body, fill=(0, 0, 0))
+            # Rest des Textes als Body
+            font_body = load_font(body_size)
+            draw.text((10, title_size + 10), '\n'.join(text.split('\n')[1:]), font=font_body, fill=(0, 0, 0))
 
             # Fügt das Textbild in das Originalbild ein
-            img.paste(text_img, (0, img.height - text_img.height), text_img)
+            img.paste(text_img, (0, img.height - text_img.height))
 
             # Speichert das Bild mit dem Text-Overlay (Voraussetzung für add_watermark)
             img.save(image_path)
 
         # Fügt das Wasserzeichen hinzu und speichert das bearbeitete Bild
+        add_watermark(image_path, watermark_path)
+    else:
+        # Kein Text vorhanden — nur Wasserzeichen aufbringen
         add_watermark(image_path, watermark_path)
 
 if __name__ == '__main__':
@@ -102,7 +110,7 @@ if __name__ == '__main__':
 
     # Durchsucht alle Bilder im Ordner und verarbeitet sie
     for file_name in os.listdir(images_folder_path):
-        if file_name.endswith('.jpg') or file_name.endswith('.jpeg') or file_name.endswith('.png'):
+        if file_name.lower().endswith(('.jpg', '.jpeg', '.png')):
             image_path = os.path.join(images_folder_path, file_name)
             text_path = os.path.splitext(image_path)[0] + '.txt'
 

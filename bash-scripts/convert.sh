@@ -1,6 +1,6 @@
 #!/bin/bash
 # 08.2020
-# hagen.gloetter@gamil.com
+# hagen.gloetter@gmail.com
 # convert a movie file to 720p to save HD space
 
 #  https://ntown.at/de/knowledgebase/cuda-gpu-accelerated-h264-h265-hevc-video-encoding-with-ffmpeg/
